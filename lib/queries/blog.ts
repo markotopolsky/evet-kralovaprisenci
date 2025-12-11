@@ -1,189 +1,177 @@
-import { BlogPost } from "@/lib/models/BlogPost";
-import { getPlaceholderImage } from "@/lib/images";
+import { ObjectId } from "mongodb";
+import { getDb } from "@/lib/db";
+import { slugify, truncate } from "@/lib/utils";
+import { Blog, BlogDto } from "@/lib/models/Blog";
 
-const mockBlogPosts: BlogPost[] = [
-  {
-    _id: "1",
-    title: "Ako pripraviť miláčika na leto",
-    slug: "ako-pripravit-milacika-na-leto",
-    excerpt: "S príchodom teplých mesiacov prichádzajú aj špecifické riziká pre našich štvornohých priateľov. Prečítajte si, ako ich ochrániť.",
-    content: `# Ako pripraviť miláčika na leto
+const COLLECTION = "blogs";
 
-Letné mesiace prinášajú nielen radosť zo slnečných dní, ale aj určité riziká pre naše domáce miláčiky.
+class SlugConflictError extends Error {
+  constructor() {
+    super("Slug already exists");
+    this.name = "SlugConflictError";
+  }
+}
 
-## Ochrana pred teplom
+async function getCollection() {
+  const db = await getDb();
+  return db.collection<Blog>(COLLECTION);
+}
 
-### Psy
-- Nikdy nenechávajte psa v aute
-- Zabezpečte stály prístup k čerstvej vode
-- Venčte v chladnejších hodinách (ráno a večer)
-- Pozor na rozpálený asfalt - môže popáliť labky
+function serializeBlog(doc: Blog): BlogDto {
+  return {
+    ...doc,
+    _id: doc._id?.toString() ?? "",
+    excerpt: truncate(doc.content, 160),
+  };
+}
 
-### Mačky
-- Zabezpečte tienisté miesto v byte
-- Mačky s bielou srsťou chráňte pred slnkom
-- Vetranie áno, ale pozor na otvorené okná
+export interface CreateBlogInput {
+  title: string;
+  slug?: string;
+  content: string;
+  imageBase64?: string | null;
+  author: string;
+  published?: boolean;
+}
 
-## Parazity
+export interface UpdateBlogInput {
+  title?: string;
+  slug?: string;
+  content?: string;
+  imageBase64?: string | null;
+  author?: string;
+  published?: boolean;
+}
 
-V lete je zvýšené riziko napadnutia:
-- **Kliešte** - prenášajú boreliózu a ďalšie choroby
-- **Blchy** - spôsobujú svrbenie a alergické reakcie
-- **Komáre** - prenášajú srdcové červy
-
-Odporúčame celoročnú antiparazitárnu ochranu.
-
-## Prvá pomoc pri prehriatí
-
-Príznaky prehriati:
-- Nadmerné slinenie
-- Ťažké dýchanie
-- Dezorientácia
-- Vracanie
-
-Pri podozrení na prehriatie okamžite:
-1. Presuňte zviera do tieňa
-2. Ponúknite vodu (nie ľadovú!)
-3. Ochladzujte postupne mokrými uterákmi
-4. Kontaktujte veterinára`,
-    image: getPlaceholderImage(1200, 600, "Miláčik v lete"),
-    author: "MVDr. Jana Nováková",
-    category: "Sezónna starostlivosť",
-    tags: ["leto", "prevencia", "teplo", "parazity"],
-    published: true,
-    featured: true,
-    readTime: 5,
-    createdAt: new Date("2024-06-01"),
-    updatedAt: new Date("2024-06-01"),
-  },
-  {
-    _id: "2",
-    title: "Nová diagnostická technika",
-    slug: "nova-diagnosticka-technika",
-    excerpt: "Naša klinika získala nový ultrazvukový prístroj, ktorý umožňuje ešte presnejšiu diagnostiku.",
-    content: `# Nová diagnostická technika
-
-Naša klinika sa neustále modernizuje a investuje do najnovšieho vybavenia.
-
-## Nový ultrazvuk
-
-Nový prístroj umožňuje:
-- Presnejšie zobrazenie vnútorných orgánov
-- Rýchlejšiu diagnostiku
-- Lepšiu kvalitu snímok
-
-## Prečo je to dôležité
-
-Presná diagnostika je základom správnej liečby.`,
-    image: getPlaceholderImage(1200, 600, "Ultrazvuk"),
-    author: "MVDr. Peter Svoboda",
-    category: "Novinky",
-    tags: ["diagnostika", "vybavenie"],
-    published: true,
-    featured: false,
-    readTime: 3,
-    createdAt: new Date("2024-05-15"),
-    updatedAt: new Date("2024-05-15"),
-  },
-  {
-    _id: "3",
-    title: "Dôležitosť dentálnej hygieny",
-    slug: "dolezitost-dentalnej-hygieny",
-    excerpt: "Zdravé zuby sú dôležité pre celkové zdravie vášho miláčika. Zistite, prečo a ako na to.",
-    content: `# Dôležitosť dentálnej hygieny
-
-Zdravé zuby sú základom celkového zdravia vášho miláčika.
-
-## Prečo je to dôležité
-
-Zubný kameň môže viesť k:
-- Zápalom ďasien
-- Stratě zubov
-- Infekciám, ktoré sa môžu rozšíriť do celého tela
-
-## Ako predchádzať problémom
-
-- Pravidelné čistenie zubov
-- Vhodné žuvacie hračky
-- Profesionálne čistenie u veterinára`,
-    image: getPlaceholderImage(1200, 600, "Dentálna hygiena"),
-    author: "MVDr. Peter Svoboda",
-    category: "Zdravie",
-    tags: ["zuby", "hygiena", "prevencia"],
-    published: true,
-    featured: false,
-    readTime: 4,
-    createdAt: new Date("2024-04-20"),
-    updatedAt: new Date("2024-04-20"),
-  },
-  {
-    _id: "4",
-    title: "Výživa seniorných psov",
-    slug: "vyziva-seniornych-psov",
-    excerpt: "Starší psi majú špecifické potreby na výživu. Zistite, ako im poskytnúť správnu stravu.",
-    content: `# Výživa seniorných psov
-
-S vekom sa menia potreby vášho psa na výživu.
-
-## Zmeny v potrebách
-
-Seniorní psi potrebujú:
-- Menej kalórií (nižšia aktivita)
-- Viac bielkovín (udržanie svalovej hmoty)
-- Ľahšie stráviteľnú stravu
-- Podporu kĺbov
-
-## Odporúčania
-
-Konzultujte s veterinárom vhodnú stravu pre vášho seniorného psa.`,
-    image: getPlaceholderImage(1200, 600, "Seniorný pes"),
-    author: "MVDr. Jana Nováková",
-    category: "Výživa",
-    tags: ["výživa", "senior", "pes"],
-    published: true,
-    featured: false,
-    readTime: 4,
-    createdAt: new Date("2024-03-10"),
-    updatedAt: new Date("2024-03-10"),
-  },
-];
-
-export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const published = mockBlogPosts
-        .filter((p) => p.published)
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-      resolve(published);
-    }, 100);
+async function ensureUniqueSlug(slug: string, excludeId?: ObjectId) {
+  const col = await getCollection();
+  const existing = await col.findOne({
+    slug,
+    ...(excludeId ? { _id: { $ne: excludeId } } : {}),
   });
+
+  if (existing) {
+    throw new SlugConflictError();
+  }
 }
 
-export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const post = mockBlogPosts.find((p) => p.slug === slug);
-      resolve(post || null);
-    }, 100);
+export async function getAllBlogs(): Promise<BlogDto[]> {
+  const col = await getCollection();
+  const blogs = await col.find({}).sort({ createdAt: -1 }).toArray();
+  return blogs.map(serializeBlog);
+}
+
+export async function getPublishedBlogs(limit?: number): Promise<BlogDto[]> {
+  const col = await getCollection();
+  let cursor = col
+    .find({ published: true })
+    .sort({ createdAt: -1 });
+
+  if (limit) {
+    cursor = cursor.limit(limit);
+  }
+
+  const blogs = await cursor.toArray();
+  return blogs.map(serializeBlog);
+}
+
+export async function getBlogBySlug(slug: string, publishedOnly = false): Promise<BlogDto | null> {
+  const col = await getCollection();
+  const blog = await col.findOne({
+    slug,
+    ...(publishedOnly ? { published: true } : {}),
   });
+  return blog ? serializeBlog(blog) : null;
 }
 
-export async function getRecentBlogPosts(limit = 3): Promise<BlogPost[]> {
-  const posts = await getAllBlogPosts();
-  return posts.slice(0, limit);
+export async function getBlogById(id: string): Promise<BlogDto | null> {
+  if (!ObjectId.isValid(id)) return null;
+  const col = await getCollection();
+  const blog = await col.findOne({ _id: new ObjectId(id) });
+  return blog ? serializeBlog(blog) : null;
 }
 
-export async function getFeaturedBlogPosts(limit = 3): Promise<BlogPost[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const featured = mockBlogPosts
-        .filter((p) => p.published && p.featured)
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-        .slice(0, limit);
-      resolve(featured);
-    }, 100);
-  });
+export async function createBlog(input: CreateBlogInput): Promise<BlogDto> {
+  const col = await getCollection();
+  const now = new Date();
+  const generatedSlug = slugify(input.slug || input.title);
+
+  await ensureUniqueSlug(generatedSlug);
+
+  const newBlog: Blog = {
+    title: input.title,
+    slug: generatedSlug,
+    content: input.content,
+    imageBase64: input.imageBase64 ?? null,
+    author: input.author,
+    createdAt: now,
+    updatedAt: now,
+    published: input.published ?? false,
+  };
+
+  const result = await col.insertOne(newBlog);
+  return serializeBlog({ ...newBlog, _id: result.insertedId });
 }
 
+export async function updateBlog(id: string, updates: UpdateBlogInput): Promise<BlogDto | null> {
+  if (!ObjectId.isValid(id)) return null;
+  const col = await getCollection();
+  const objectId = new ObjectId(id);
 
+  const existing = await col.findOne({ _id: objectId });
+  if (!existing) {
+    return null;
+  }
 
+  let nextSlug = existing.slug;
+  if (updates.slug !== undefined) {
+    nextSlug = slugify(updates.slug || updates.title || existing.title);
+  } else if (updates.title) {
+    nextSlug = slugify(updates.title);
+  }
+
+  if (nextSlug !== existing.slug) {
+    await ensureUniqueSlug(nextSlug, objectId);
+  }
+
+  const setData: Partial<Blog> = {
+    updatedAt: new Date(),
+    slug: nextSlug,
+  };
+
+  if (updates.title !== undefined) setData.title = updates.title;
+  if (updates.content !== undefined) setData.content = updates.content;
+  if (updates.imageBase64 !== undefined) setData.imageBase64 = updates.imageBase64;
+  if (updates.author !== undefined) setData.author = updates.author;
+  if (updates.published !== undefined) setData.published = updates.published;
+
+  await col.updateOne(
+    { _id: objectId },
+    { $set: setData }
+  );
+
+  const updated = await col.findOne({ _id: objectId });
+  return updated ? serializeBlog(updated) : null;
+}
+
+export async function deleteBlog(id: string): Promise<boolean> {
+  if (!ObjectId.isValid(id)) return false;
+  const col = await getCollection();
+  const result = await col.deleteOne({ _id: new ObjectId(id) });
+  return result.deletedCount === 1;
+}
+
+// Public blog page helpers - return only published blogs
+export async function getAllBlogPosts(): Promise<BlogDto[]> {
+  return getPublishedBlogs();
+}
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogDto | null> {
+  return getBlogBySlug(slug, true);
+}
+
+export async function getRecentBlogPosts(limit: number): Promise<BlogDto[]> {
+  return getPublishedBlogs(limit);
+}
+
+export { SlugConflictError };

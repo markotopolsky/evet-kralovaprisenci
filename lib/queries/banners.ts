@@ -9,6 +9,16 @@ export interface InfoBarSettings {
   updatedAt?: Date;
 }
 
+// Settings document type for MongoDB - uses string _id
+interface SettingsDoc {
+  _id: string;
+  infoBar?: {
+    enabled: boolean;
+    message: string;
+    updatedAt?: Date;
+  };
+}
+
 // Konverzia MongoDB dokumentu na Banner interface
 function documentToBanner(doc: BannerDocument): Banner {
   return {
@@ -40,7 +50,7 @@ export async function getInfoBarSettings(): Promise<InfoBarSettings> {
   try {
     const db = await getDb();
     const settings = await db
-      .collection("settings")
+      .collection<SettingsDoc>("settings")
       .findOne({ _id: "global" });
 
     if (!settings || !settings.infoBar) {
@@ -80,7 +90,7 @@ export async function getActiveBanners(): Promise<Banner[]> {
         startDate: { $lte: now },
         $or: [
           { endDate: { $exists: false } },
-          { endDate: null },
+          { endDate: { $eq: null as unknown as Date } },
           { endDate: { $gte: now } },
         ],
       })
