@@ -4,13 +4,11 @@ import "@/styles/globals.css";
 import { UIProvider } from "@/context/UIContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { Banner } from "@/components/layout/Banner";
-import { InfoBar } from "@/components/layout/InfoBar";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { siteConfig } from "@/config/site";
 import { defaultMetadata, generateLocalBusinessSchema, generateWebsiteSchema } from "@/lib/seo";
-import { getActiveBanners } from "@/lib/queries/banners";
 
 // Optimize fonts - only load weights we actually use
 const nunito = Nunito({
@@ -47,13 +45,11 @@ export const viewport: Viewport = {
   themeColor: "#3C8C80",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const banners = await getActiveBanners();
-
   return (
     <html
       lang="sk"
@@ -89,8 +85,7 @@ export default async function RootLayout({
             </a>
             
             <div className="flex flex-col min-h-screen">
-              <Banner banners={banners} />
-              <InfoBar />
+              <Banner />
               <Navbar />
               <main id="main-content" className="flex-grow" role="main">
                 {children}

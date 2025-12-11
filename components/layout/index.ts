@@ -1,6 +1,5 @@
 export { Navbar } from "./Navbar";
 export { Footer } from "./Footer";
-export { InfoBar } from "./InfoBar";
 export { ContactCTA } from "./ContactCTA";
 export { MapEmbed } from "./MapEmbed";
 export { MapSection } from "./MapSection";

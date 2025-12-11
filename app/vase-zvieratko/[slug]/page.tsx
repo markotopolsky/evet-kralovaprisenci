@@ -75,3 +75,5 @@ export default async function AnimalTypePage({ params }: PageProps) {
   );
 }
 
+
+

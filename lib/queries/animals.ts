@@ -188,7 +188,9 @@ Pravidelné kontroly u veterinára a sledovanie:
 export async function getAllAnimalTypes(): Promise<AnimalType[]> {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(mockAnimalTypes.sort((a, b) => a.order - b.order));
+      // Filter out "vtaky" as it's been transformed into /aktuality
+      const filteredTypes = mockAnimalTypes.filter((type) => type.slug !== "vtaky");
+      resolve(filteredTypes.sort((a, b) => a.order - b.order));
     }, 100);
   });
 }
@@ -242,4 +244,6 @@ export async function getRecentArticles(limit = 3): Promise<AnimalArticle[]> {
   const articles = await getAllArticles();
   return articles.slice(0, limit);
 }
+
+
 

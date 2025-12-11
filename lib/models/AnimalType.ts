@@ -10,3 +10,5 @@ export interface AnimalType {
   updatedAt: Date;
 }
 
+
+

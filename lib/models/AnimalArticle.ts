@@ -13,3 +13,5 @@ export interface AnimalArticle {
   updatedAt?: Date;
 }
 
+
+

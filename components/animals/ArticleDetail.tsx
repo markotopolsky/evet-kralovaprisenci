@@ -67,3 +67,5 @@ export function ArticleDetail({ article, animalSlug, animalName }: ArticleDetail
   );
 }
 
+
+

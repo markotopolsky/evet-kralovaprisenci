@@ -118,3 +118,5 @@ export function getNextOpeningInfo(): { day: string; hours: string } | null {
   return null;
 }
 
+
+

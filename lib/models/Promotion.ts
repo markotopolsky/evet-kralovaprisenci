@@ -13,3 +13,5 @@ export interface Promotion {
   updatedAt: Date;
 }
 
+
+
