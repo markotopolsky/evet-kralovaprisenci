@@ -3,11 +3,12 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { generatePageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/config/site";
+import { urls } from "@/config/urls";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "O nás | Veterinárna klinika Kráľová pri Senci",
   description: "Spoznajte náš tím skúsených veterinárov a modernú veterinárnu kliniku. Poskytujeme komplexnú starostlivosť pre psov, mačky a malé zvieratá už viac ako 15 rokov.",
-  path: "/about",
+  path: urls.about,
 });
 
 const teamMembers = [
@@ -34,7 +35,7 @@ const teamMembers = [
 export default function AboutPage() {
   return (
     <>
-      <Breadcrumbs items={[{ name: "O nás", href: "/about" }]} />
+      <Breadcrumbs items={[{ name: "O nás", href: urls.about }]} />
       
       <section className="section-padding bg-white" aria-labelledby="about-heading">
         <div className="container-friendly">
@@ -131,7 +132,7 @@ export default function AboutPage() {
 
           <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
             <Link
-              href="/about/equipment"
+              href={urls.equipment}
               className="card-friendly p-8 text-center group"
             >
               <span className="text-5xl block mb-4">🏥</span>
@@ -143,7 +144,7 @@ export default function AboutPage() {
               </p>
             </Link>
             <Link
-              href="/about/gallery"
+              href={urls.gallery}
               className="card-friendly p-8 text-center group"
             >
               <span className="text-5xl block mb-4">📷</span>

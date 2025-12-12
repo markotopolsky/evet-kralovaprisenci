@@ -3,11 +3,12 @@ import { ServicesList } from "@/components/services/ServicesList";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { getAllServices } from "@/lib/queries/services";
 import { generatePageMetadata } from "@/lib/seo";
+import { urls } from "@/config/urls";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Veterinárne služby | Kompletná starostlivosť pre vaše zvieratá",
-  description: "Ponúkame širokú škálu veterinárnych služieb: preventívne prehliadky, vakcinácia, chirurgia, stomatológia, diagnostika a laboratórne vyšetrenia.",
-  path: "/services",
+  description: "Ponúkame širokú škálu veterinárnych služieb: interná medicína, krvné vyšetrenia, USG, RTG, chirurgia, dentálna hygiena, hospitalizácia 24H a pohotovosť.",
+  path: urls.services,
 });
 
 export default async function ServicesPage() {
@@ -15,7 +16,7 @@ export default async function ServicesPage() {
 
   return (
     <>
-      <Breadcrumbs items={[{ name: "Služby", href: "/services" }]} />
+      <Breadcrumbs items={[{ name: "Služby", href: urls.services }]} />
       
       <section className="section-padding bg-white" aria-labelledby="services-heading">
         <div className="container-friendly">

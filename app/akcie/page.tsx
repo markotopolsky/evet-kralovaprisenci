@@ -3,11 +3,12 @@ import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { getAllPromotions } from "@/lib/queries/promotions";
 import { generatePageMetadata } from "@/lib/seo";
 import { formatDate } from "@/lib/utils";
+import { urls } from "@/config/urls";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Akcie a zľavy | Špeciálne ponuky veterinárnej kliniky",
   description: "Využite naše aktuálne akcie a špeciálne ponuky na veterinárne služby. Zľavy na vakcináciu, preventívne prehliadky a ďalšie služby.",
-  path: "/promotions",
+  path: urls.promotions,
 });
 
 export default async function PromotionsPage() {
@@ -15,7 +16,7 @@ export default async function PromotionsPage() {
 
   return (
     <>
-      <Breadcrumbs items={[{ name: "Akcie", href: "/promotions" }]} />
+      <Breadcrumbs items={[{ name: "Akcie", href: urls.promotions }]} />
       
       <section className="section-padding bg-white" aria-labelledby="promotions-heading">
         <div className="container-friendly">

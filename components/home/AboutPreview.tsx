@@ -1,29 +1,41 @@
 "use client";
 
 import Link from "next/link";
+import { urls } from "@/config/urls";
 import { useLanguage } from "@/context/LanguageContext";
+import {
+  Building2,
+  Users,
+  HeartHandshake,
+  Clock3,
+  Dog,
+  Cat,
+  Rabbit,
+  Info,
+  LucideIcon,
+} from "lucide-react";
 
 export function AboutPreview() {
   const { t } = useLanguage();
 
-  const features = [
+  const features: { icon: LucideIcon; title: string; description: string }[] = [
     {
-      icon: "🏥",
+      icon: Building2,
       title: t.about.modernClinic,
       description: t.about.modernClinicDesc,
     },
     {
-      icon: "👨‍⚕️",
+      icon: Users,
       title: t.about.experiencedTeam,
       description: t.about.experiencedTeamDesc,
     },
     {
-      icon: "❤️",
+      icon: HeartHandshake,
       title: t.about.individualCare,
       description: t.about.individualCareDesc,
     },
     {
-      icon: "🕐",
+      icon: Clock3,
       title: t.about.flexibleHours,
       description: t.about.flexibleHoursDesc,
     },
@@ -34,8 +46,8 @@ export function AboutPreview() {
       <div className="container-friendly">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="badge mb-4">
-              ℹ️ {t.about.badge}
+            <span className="badge mb-4 inline-flex items-center gap-2">
+              <Info className="w-4 h-4" /> {t.about.badge}
             </span>
             <h2
               id="about-preview-heading"
@@ -48,24 +60,27 @@ export function AboutPreview() {
             </p>
 
             <div className="grid sm:grid-cols-2 gap-4 mb-8">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-[#F2F7F5] rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-xl">{feature.icon}</span>
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={index} className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-[#F2F7F5] rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-[#3C8C80]" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-[#2A2A2A] mb-1">
+                        {feature.title}
+                      </h3>
+                      <p className="text-sm text-[#5C5C5C]">
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-[#2A2A2A] mb-1">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm text-[#5C5C5C]">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            <Link href="/about" className="btn-secondary">
+            <Link href={urls.about} className="btn-secondary">
               {t.about.moreAbout} →
             </Link>
           </div>
@@ -87,10 +102,10 @@ export function AboutPreview() {
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center justify-center gap-4">
-                <div className="text-6xl">🐕</div>
-                <div className="text-6xl">🐈</div>
-                <div className="text-6xl">🐹</div>
+              <div className="mt-6 flex items-center justify-center gap-4 text-[#3C8C80]">
+                <Dog className="w-12 h-12" />
+                <Cat className="w-12 h-12" />
+                <Rabbit className="w-12 h-12" />
               </div>
             </div>
           </div>

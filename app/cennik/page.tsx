@@ -3,11 +3,12 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { generatePageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/config/site";
+import { urls } from "@/config/urls";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Cenník | Veterinárne služby a ceny",
   description: "Orientačný cenník veterinárnych služieb. Vakcinácia, chirurgické zákroky, diagnostika, stomatológia a ďalšie služby.",
-  path: "/pricing",
+  path: urls.pricing,
 });
 
 const pricingCategories = [
@@ -78,7 +79,7 @@ const pricingCategories = [
 export default function PricingPage() {
   return (
     <>
-      <Breadcrumbs items={[{ name: "Cenník", href: "/pricing" }]} />
+      <Breadcrumbs items={[{ name: "Cenník", href: urls.pricing }]} />
       
       <section className="section-padding bg-white" aria-labelledby="pricing-heading">
         <div className="container-friendly">

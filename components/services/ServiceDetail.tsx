@@ -3,21 +3,57 @@
 import Link from "next/link";
 import { Service } from "@/lib/models/Service";
 import { siteConfig } from "@/config/site";
-import { useLanguage } from "@/context/LanguageContext";
+import { 
+  Stethoscope, 
+  Droplet, 
+  Waves, 
+  Bone, 
+  Bandage, 
+  Dog, 
+  Smile, 
+  Sun, 
+  Hospital, 
+  Ambulance, 
+  ShoppingBag, 
+  MessageCircle,
+  LucideIcon
+} from "lucide-react";
 
 interface ServiceDetailProps {
   service: Service;
 }
 
+const serviceIcons: Record<string, LucideIcon> = {
+  "stethoscope": Stethoscope,
+  "droplet": Droplet,
+  "waves": Waves,
+  "bone": Bone,
+  "bandage": Bandage,
+  "dog": Dog,
+  "smile": Smile,
+  "sun": Sun,
+  "hospital": Hospital,
+  "ambulance": Ambulance,
+  "shopping-bag": ShoppingBag,
+  "message-circle": MessageCircle,
+};
+
 export function ServiceDetail({ service }: ServiceDetailProps) {
-  const { language } = useLanguage();
+  const IconComponent = service.icon ? serviceIcons[service.icon] : null;
 
   return (
     <article className="max-w-4xl mx-auto">
       <div className="bg-[#F2F7F5] rounded-2xl p-8 mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-[#2A2A2A] mb-4">
-          {service.title}
-        </h1>
+        <div className="flex items-center gap-4 mb-4">
+          {IconComponent && (
+            <div className="w-16 h-16 bg-[#3C8C80]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <IconComponent className="w-8 h-8 text-[#3C8C80]" />
+            </div>
+          )}
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#2A2A2A]">
+            {service.title}
+          </h1>
+        </div>
         <p className="text-xl text-[#5C5C5C]">
           {service.shortDescription}
         </p>
@@ -29,19 +65,34 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
         </p>
       </div>
 
-      {service.price && (
-        <div className="bg-[#E6B84C]/10 border border-[#E6B84C] rounded-xl p-6 mb-8">
-          <h2 className="font-semibold text-lg text-[#2A2A2A] mb-2">
-            {language === "sk" ? "Orientačná cena" : "Richtwert"}
-          </h2>
-          <p className="text-2xl font-bold text-[#3C8C80]">
-            {service.price}
-          </p>
-          <p className="text-sm text-[#5C5C5C] mt-2">
-            {language === "sk"
-              ? "Presná cena závisí od konkrétneho prípadu. Kontaktujte nás pre cenovú ponuku."
-              : "Der genaue Preis hängt vom jeweiligen Fall ab. Kontaktieren Sie uns für ein Angebot."}
-          </p>
+      {(service.price || service.duration) && (
+        <div className="grid sm:grid-cols-2 gap-4 mb-8">
+          {service.price && (
+            <div className="bg-[#E6B84C]/10 border border-[#E6B84C] rounded-xl p-6">
+              <h2 className="font-semibold text-lg text-[#2A2A2A] mb-2">
+                Orientačná cena
+              </h2>
+              <p className="text-2xl font-bold text-[#3C8C80]">
+                {service.price}
+              </p>
+              <p className="text-sm text-[#5C5C5C] mt-2">
+                Presná cena závisí od konkrétneho prípadu.
+              </p>
+            </div>
+          )}
+          {service.duration && service.duration !== "-" && (
+            <div className="bg-[#3C8C80]/10 border border-[#3C8C80]/30 rounded-xl p-6">
+              <h2 className="font-semibold text-lg text-[#2A2A2A] mb-2">
+                Trvanie
+              </h2>
+              <p className="text-2xl font-bold text-[#3C8C80]">
+                {service.duration}
+              </p>
+              <p className="text-sm text-[#5C5C5C] mt-2">
+                Čas sa môže líšiť podľa náročnosti.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -52,7 +103,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
           rel="noopener noreferrer"
           className="btn-primary text-center"
         >
-          📅 {language === "sk" ? "Objednať sa" : "Termin buchen"}
+          📅 Objednať sa
         </Link>
         <a
           href={`tel:${siteConfig.phone}`}
@@ -64,4 +115,3 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
     </article>
   );
 }
-

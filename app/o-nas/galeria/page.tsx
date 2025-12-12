@@ -2,11 +2,12 @@ import { Metadata } from "next";
 import { Gallery } from "@/components/about/Gallery";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { generatePageMetadata } from "@/lib/seo";
+import { urls } from "@/config/urls";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Galéria | Prehliadka veterinárnej kliniky",
   description: "Pozrite si fotografie našej veterinárnej kliniky - prijímacia miestnosť, vyšetrovne, operačná sála, čakáreň a hospitalizácia.",
-  path: "/about/gallery",
+  path: urls.gallery,
 });
 
 export default function GalleryPage() {
@@ -14,8 +15,8 @@ export default function GalleryPage() {
     <>
       <Breadcrumbs
         items={[
-          { name: "O nás", href: "/about" },
-          { name: "Galéria", href: "/about/gallery" },
+          { name: "O nás", href: urls.about },
+          { name: "Galéria", href: urls.gallery },
         ]}
       />
       

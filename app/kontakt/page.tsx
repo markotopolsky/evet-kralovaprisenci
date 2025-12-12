@@ -4,17 +4,18 @@ import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { MapEmbed } from "@/components/layout/MapEmbed";
 import { generatePageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/config/site";
+import { urls } from "@/config/urls";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Kontakt | Veterinárna klinika Kráľová pri Senci",
   description: `Kontaktujte nás: ${siteConfig.phone}. Adresa: ${siteConfig.address.street}, ${siteConfig.address.city}. Objednajte sa online alebo nás navštívte osobne.`,
-  path: "/contact",
+  path: urls.contact,
 });
 
 export default function ContactPage() {
   return (
     <>
-      <Breadcrumbs items={[{ name: "Kontakt", href: "/contact" }]} />
+      <Breadcrumbs items={[{ name: "Kontakt", href: urls.contact }]} />
       
       <section className="section-padding bg-white" aria-labelledby="contact-heading">
         <div className="container-friendly">

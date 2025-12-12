@@ -10,23 +10,27 @@ import {
   ChevronDown, 
   Phone, 
   Stethoscope, 
-  Syringe, 
-  Scissors, 
-  Heart,
-  Microscope,
-  FlaskConical,
+  Droplet,
+  Waves,
+  Bone,
+  Bandage,
   Dog,
+  Smile,
+  Sun,
+  Hospital,
+  Ambulance,
+  ShoppingBag,
+  MessageCircle,
   Cat,
   Rabbit,
-  Bird,
   Building2,
   Camera,
   Users,
   Calendar,
-  Newspaper
+  Newspaper,
+  Microscope
 } from "lucide-react";
 import { useUI } from "@/context/UIContext";
-import { useLanguage } from "@/context/LanguageContext";
 import { siteConfig } from "@/config/site";
 import { urls } from "@/config/urls";
 
@@ -78,7 +82,7 @@ function DropdownMenu({ label, items, isOpen, onToggle, onClose }: DropdownMenuP
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-[#e8e6e1] py-2 z-50">
+        <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-[#e8e6e1] py-2 z-50 max-h-[70vh] overflow-y-auto">
           {items.map((item) => (
             <Link
               key={item.href}
@@ -109,162 +113,138 @@ function DropdownMenu({ label, items, isOpen, onToggle, onClose }: DropdownMenuP
   );
 }
 
-function LanguageSwitcher() {
-  const { language, setLanguage } = useLanguage();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
-
-  const otherLanguage = language === "sk" ? "de" : "sk";
-  const otherLabel = language === "sk" ? "Deutsch" : "Slovenčina";
-
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1.5 px-3 py-2 text-[15px] font-medium rounded-md transition-colors ${
-          isOpen 
-            ? "text-[#3C8C80] bg-[#3C8C80]/5" 
-            : "text-[#4a4a4a] hover:text-[#3C8C80] hover:bg-[#f8f8f6]"
-        }`}
-        aria-expanded={isOpen}
-      >
-        {language.toUpperCase()}
-        <ChevronDown 
-          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} 
-        />
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-36 bg-white rounded-lg shadow-lg border border-[#e8e6e1] py-1 z-50">
-          <button
-            onClick={() => {
-              setLanguage(otherLanguage);
-              setIsOpen(false);
-            }}
-            className="w-full text-left px-4 py-2.5 text-[15px] font-medium text-[#2A2A2A] hover:bg-[#f8f8f6] transition-colors"
-          >
-            {otherLabel}
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function Navbar() {
   const pathname = usePathname();
   const { isMobileNavOpen, toggleMobileNav, closeMobileNav } = useUI();
-  const { t, language } = useLanguage();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const servicesItems: DropdownItem[] = [
     { 
-      name: language === "sk" ? "Preventívne prehliadky" : "Vorsorgeuntersuchungen", 
-      href: "/services/preventivne-prehliadky",
+      name: "Interná medicína", 
+      href: urls.service("interna-medicina"),
       icon: <Stethoscope className="w-5 h-5" />,
-      description: language === "sk" ? "Pravidelné kontroly zdravia" : "Regelmäßige Gesundheitschecks"
+      description: "Komplexné vyšetrenia"
     },
     { 
-      name: language === "sk" ? "Vakcinácia" : "Impfungen", 
-      href: "/services/vakcinacia",
-      icon: <Syringe className="w-5 h-5" />,
-      description: language === "sk" ? "Očkovanie podľa kalendára" : "Impfung nach Plan"
+      name: "Krvné vyšetrenia", 
+      href: urls.service("krvne-vysetrenia"),
+      icon: <Droplet className="w-5 h-5" />,
+      description: "Hematológia a biochémia"
     },
     { 
-      name: language === "sk" ? "Chirurgia" : "Chirurgie", 
-      href: "/services/chirurgia",
-      icon: <Scissors className="w-5 h-5" />,
-      description: language === "sk" ? "Operačné zákroky" : "Operative Eingriffe"
+      name: "USG vyšetrenie", 
+      href: urls.service("usg-vysetrenie"),
+      icon: <Waves className="w-5 h-5" />,
+      description: "Ultrazvukové zobrazenie"
     },
     { 
-      name: language === "sk" ? "Stomatológia" : "Zahnmedizin", 
-      href: "/services/stomatologia",
-      icon: <Heart className="w-5 h-5" />,
-      description: language === "sk" ? "Dentálna starostlivosť" : "Zahnpflege"
+      name: "RTG diagnostika", 
+      href: urls.service("rtg-diagnostika"),
+      icon: <Bone className="w-5 h-5" />,
+      description: "Digitálna rádiografia"
     },
     { 
-      name: language === "sk" ? "Diagnostika" : "Diagnostik", 
-      href: "/services/diagnostika",
-      icon: <Microscope className="w-5 h-5" />,
-      description: language === "sk" ? "Röntgen a USG vyšetrenia" : "Röntgen und Ultraschall"
+      name: "Chirurgia", 
+      href: urls.service("chirurgia"),
+      icon: <Bandage className="w-5 h-5" />,
+      description: "Operačné zákroky"
     },
     { 
-      name: language === "sk" ? "Laboratórium" : "Labor", 
-      href: "/services/laboratorium",
-      icon: <FlaskConical className="w-5 h-5" />,
-      description: language === "sk" ? "Krvné testy a analýzy" : "Bluttests und Analysen"
+      name: "Plastika podnebia", 
+      href: urls.service("plastika-podnebia"),
+      icon: <Dog className="w-5 h-5" />,
+      description: "BOAS syndróm"
+    },
+    { 
+      name: "Dentálna hygiena", 
+      href: urls.service("dentalna-hygiena"),
+      icon: <Smile className="w-5 h-5" />,
+      description: "Starostlivosť o chrup"
+    },
+    { 
+      name: "PHOVIA terapia", 
+      href: urls.service("phovia-terapia"),
+      icon: <Sun className="w-5 h-5" />,
+      description: "Svetelná liečba kože"
+    },
+    { 
+      name: "Hospitalizácia 24H", 
+      href: urls.service("hospitalizacia"),
+      icon: <Hospital className="w-5 h-5" />,
+      description: "Nepretržitá starostlivosť"
+    },
+    { 
+      name: "Pohotovosť", 
+      href: urls.service("pohotovost"),
+      icon: <Ambulance className="w-5 h-5" />,
+      description: "Urgentná pomoc"
+    },
+    { 
+      name: "Krmivá a doplnky", 
+      href: urls.service("krmiva-doplnky"),
+      icon: <ShoppingBag className="w-5 h-5" />,
+      description: "Veterinárna výživa"
+    },
+    { 
+      name: "Konzultácie", 
+      href: urls.service("konzultacie"),
+      icon: <MessageCircle className="w-5 h-5" />,
+      description: "Osobné poradenstvo"
     },
   ];
 
   const animalsItems: DropdownItem[] = [
     { 
-      name: language === "sk" ? "Psy" : "Hunde", 
+      name: "Psy", 
       href: "/vase-zvieratko/psy",
       icon: <Dog className="w-5 h-5" />,
-      description: language === "sk" ? "Starostlivosť o psov" : "Hundepflege"
+      description: "Starostlivosť o psov"
     },
     { 
-      name: language === "sk" ? "Mačky" : "Katzen", 
+      name: "Mačky", 
       href: "/vase-zvieratko/macky",
       icon: <Cat className="w-5 h-5" />,
-      description: language === "sk" ? "Starostlivosť o mačky" : "Katzenpflege"
+      description: "Starostlivosť o mačky"
     },
     { 
-      name: language === "sk" ? "Hlodavce" : "Nagetiere", 
+      name: "Hlodavce", 
       href: "/vase-zvieratko/hlodavce",
       icon: <Rabbit className="w-5 h-5" />,
-      description: language === "sk" ? "Morčatá, králiky, škrečky" : "Meerschweinchen, Kaninchen"
+      description: "Morčatá, králiky, škrečky"
     },
     { 
-      name: language === "sk" ? "Aktuality" : "Aktuelles", 
+      name: "Aktuality", 
       href: "/vase-zvieratko/aktuality",
       icon: <Newspaper className="w-5 h-5" />,
-      description: language === "sk" ? "Novinky a dôležité informácie" : "Neuigkeiten und wichtige Informationen"
+      description: "Novinky a dôležité informácie"
     },
   ];
 
   const aboutItems: DropdownItem[] = [
     { 
-      name: language === "sk" ? "O klinike" : "Über die Klinik", 
-      href: "/about",
+      name: "O klinike", 
+      href: urls.about,
       icon: <Building2 className="w-5 h-5" />,
-      description: language === "sk" ? "Naša história a hodnoty" : "Unsere Geschichte und Werte"
+      description: "Naša história a hodnoty"
     },
     { 
-      name: language === "sk" ? "Náš tím" : "Unser Team", 
-      href: "/about#team",
+      name: "Náš tím", 
+      href: `${urls.about}#team`,
       icon: <Users className="w-5 h-5" />,
-      description: language === "sk" ? "Veterinári a personál" : "Tierärzte und Personal"
+      description: "Veterinári a personál"
     },
     { 
-      name: language === "sk" ? "Vybavenie" : "Ausstattung", 
-      href: "/about/equipment",
+      name: "Vybavenie", 
+      href: urls.equipment,
       icon: <Microscope className="w-5 h-5" />,
-      description: language === "sk" ? "Moderné diagnostické prístroje" : "Moderne Diagnosegeräte"
+      description: "Moderné diagnostické prístroje"
     },
     { 
-      name: language === "sk" ? "Galéria" : "Galerie", 
-      href: "/about/gallery",
+      name: "Galéria", 
+      href: urls.gallery,
       icon: <Camera className="w-5 h-5" />,
-      description: language === "sk" ? "Fotografie kliniky" : "Fotos der Klinik"
+      description: "Fotografie kliniky"
     },
-  ];
-
-  const simpleNavItems = [
-    { name: t.nav.home, href: urls.home },
-    { name: t.nav.blog, href: urls.blog },
   ];
 
   const handleDropdownToggle = (dropdown: string) => {
@@ -307,12 +287,12 @@ export function Navbar() {
                   : "text-[#4a4a4a] hover:text-[#3C8C80] hover:bg-[#f8f8f6]"
               }`}
             >
-              {t.nav.home}
+              Domov
             </Link>
 
             {/* Services Dropdown */}
             <DropdownMenu
-              label={t.nav.services}
+              label="Služby"
               items={servicesItems}
               isOpen={openDropdown === "services"}
               onToggle={() => handleDropdownToggle("services")}
@@ -321,7 +301,7 @@ export function Navbar() {
 
             {/* Animals Dropdown */}
             <DropdownMenu
-              label={t.nav.animals}
+              label="Vaše zvieratko"
               items={animalsItems}
               isOpen={openDropdown === "animals"}
               onToggle={() => handleDropdownToggle("animals")}
@@ -330,7 +310,7 @@ export function Navbar() {
 
             {/* About Dropdown */}
             <DropdownMenu
-              label={t.nav.about}
+              label="O nás"
               items={aboutItems}
               isOpen={openDropdown === "about"}
               onToggle={() => handleDropdownToggle("about")}
@@ -346,18 +326,12 @@ export function Navbar() {
                   : "text-[#4a4a4a] hover:text-[#3C8C80] hover:bg-[#f8f8f6]"
               }`}
             >
-              {t.nav.blog}
+              Blog
             </Link>
-
-            <div className="w-px h-6 bg-[#e8e6e1] mx-2" />
-
-            {/* Language Switcher */}
-            <LanguageSwitcher />
           </div>
 
           {/* CTA Buttons */}
           <div className="hidden lg:flex items-center gap-3">
-
             <Link
               href={siteConfig.bookingUrl}
               target="_blank"
@@ -365,7 +339,7 @@ export function Navbar() {
               className="flex items-center gap-2 px-4 py-2.5 text-[15px] font-medium text-white bg-[#3C8C80] rounded-lg hover:bg-[#2d6b62] transition-colors"
             >
               <Calendar className="w-4 h-4" />
-              {t.nav.book}
+              Objednať sa
             </Link>
           </div>
 
@@ -378,7 +352,7 @@ export function Navbar() {
               className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-[#3C8C80] rounded-lg hover:bg-[#2d6b62] transition-colors"
             >
               <Calendar className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.nav.book}</span>
+              <span className="hidden sm:inline">Objednať sa</span>
             </Link>
             <button
               onClick={toggleMobileNav}
@@ -410,13 +384,13 @@ export function Navbar() {
                   : "text-[#2A2A2A] hover:bg-[#f8f8f6]"
               }`}
             >
-              {t.nav.home}
+              Domov
             </Link>
 
             {/* Services Section */}
             <div className="pt-2">
               <p className="px-4 py-2 text-[13px] font-semibold text-[#6b6b6b] uppercase tracking-wide">
-                {t.nav.services}
+                Služby
               </p>
               {servicesItems.map((item) => (
                 <Link
@@ -434,7 +408,7 @@ export function Navbar() {
             {/* Animals Section */}
             <div className="pt-2">
               <p className="px-4 py-2 text-[13px] font-semibold text-[#6b6b6b] uppercase tracking-wide">
-                {t.nav.animals}
+                Vaše zvieratko
               </p>
               {animalsItems.map((item) => (
                 <Link
@@ -452,7 +426,7 @@ export function Navbar() {
             {/* About Section */}
             <div className="pt-2">
               <p className="px-4 py-2 text-[13px] font-semibold text-[#6b6b6b] uppercase tracking-wide">
-                {t.nav.about}
+                O nás
               </p>
               {aboutItems.map((item) => (
                 <Link
@@ -477,13 +451,8 @@ export function Navbar() {
                   : "text-[#2A2A2A] hover:bg-[#f8f8f6]"
               }`}
             >
-              {t.nav.blog}
+              Blog
             </Link>
-
-            {/* Language Switcher Mobile */}
-            <div className="pt-4 border-t border-[#e8e6e1]">
-              <MobileLanguageSwitcher />
-            </div>
 
             {/* CTA Buttons Mobile */}
             <div className="pt-4 space-y-3">
@@ -503,41 +472,12 @@ export function Navbar() {
                 className="flex items-center justify-center gap-2 w-full px-4 py-3 text-[15px] font-medium text-white bg-[#3C8C80] rounded-lg"
               >
                 <Calendar className="w-4 h-4" />
-                {t.nav.bookOnline}
+                Objednať sa online
               </Link>
             </div>
           </div>
         </div>
       )}
     </header>
-  );
-}
-
-function MobileLanguageSwitcher() {
-  const { language, setLanguage } = useLanguage();
-
-  return (
-    <div className="flex gap-2 px-4">
-      <button
-        onClick={() => setLanguage("sk")}
-        className={`flex-1 py-2.5 text-[15px] font-medium rounded-lg transition-colors ${
-          language === "sk"
-            ? "bg-[#3C8C80]/10 text-[#3C8C80]"
-            : "bg-[#f8f8f6] text-[#4a4a4a] hover:bg-[#f0f0ec]"
-        }`}
-      >
-        Slovenčina
-      </button>
-      <button
-        onClick={() => setLanguage("de")}
-        className={`flex-1 py-2.5 text-[15px] font-medium rounded-lg transition-colors ${
-          language === "de"
-            ? "bg-[#3C8C80]/10 text-[#3C8C80]"
-            : "bg-[#f8f8f6] text-[#4a4a4a] hover:bg-[#f0f0ec]"
-        }`}
-      >
-        Deutsch
-      </button>
-    </div>
   );
 }

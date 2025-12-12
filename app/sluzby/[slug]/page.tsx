@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { PrevNextNav } from "@/components/ui/PrevNextNav";
 import { getAllServices, getServiceBySlug, getAdjacentServices } from "@/lib/queries/services";
 import { generatePageMetadata, generateServiceSchema } from "@/lib/seo";
+import { urls } from "@/config/urls";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -26,14 +27,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return generatePageMetadata({
       title: "Služba nenájdená",
       description: "Táto služba neexistuje.",
-      path: `/services/${slug}`,
+      path: urls.service(slug),
     });
   }
 
   return generatePageMetadata({
     title: `${service.title} | Veterinárne služby`,
     description: service.shortDescription,
-    path: `/services/${slug}`,
+    path: urls.service(slug),
   });
 }
 
@@ -58,8 +59,8 @@ export default async function ServicePage({ params }: PageProps) {
       })} />
       <Breadcrumbs
         items={[
-          { name: "Služby", href: "/services" },
-          { name: service.title, href: `/services/${slug}` },
+          { name: "Služby", href: urls.services },
+          { name: service.title, href: urls.service(slug) },
         ]}
       />
       
@@ -71,15 +72,15 @@ export default async function ServicePage({ params }: PageProps) {
             prev={adjacent.prev ? {
               title: adjacent.prev.title,
               slug: adjacent.prev.slug,
-              href: `/services/${adjacent.prev.slug}`,
+              href: urls.service(adjacent.prev.slug),
             } : null}
             next={adjacent.next ? {
               title: adjacent.next.title,
               slug: adjacent.next.slug,
-              href: `/services/${adjacent.next.slug}`,
+              href: urls.service(adjacent.next.slug),
             } : null}
             backLink={{
-              href: "/services",
+              href: urls.services,
               label: "Späť na všetky služby",
             }}
           />
