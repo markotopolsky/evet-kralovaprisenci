@@ -1,6 +1,7 @@
 import { Banner, BannerDocument } from "@/lib/models/Banner";
 import { getDb } from "@/lib/db";
 import { env } from "@/config/env";
+import type { Filter } from "mongodb";
 
 // InfoBar type from settings collection
 export interface InfoBarSettings {
@@ -9,7 +10,7 @@ export interface InfoBarSettings {
   updatedAt?: Date;
 }
 
-// Settings document type for MongoDB - uses string _id
+// Settings document type for MongoDB - uses string _id (not ObjectId)
 interface SettingsDoc {
   _id: string;
   infoBar?: {
@@ -49,9 +50,11 @@ export async function getInfoBarSettings(): Promise<InfoBarSettings> {
 
   try {
     const db = await getDb();
+    // Use typed filter for string _id (MongoDB v7 requires explicit typing)
+    const filter: Filter<SettingsDoc> = { _id: "global" };
     const settings = await db
       .collection<SettingsDoc>("settings")
-      .findOne({ _id: "global" });
+      .findOne(filter);
 
     if (!settings || !settings.infoBar) {
       return { enabled: false, message: "" };

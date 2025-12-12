@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { ArticleDetail } from "@/components/animals/ArticleDetail";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getAllAnimalTypes, getAnimalTypeBySlug, getArticlesByAnimalType, getArticleBySlug } from "@/lib/queries/animals";
+import { PrevNextNav } from "@/components/ui/PrevNextNav";
+import { getAllAnimalTypes, getAnimalTypeBySlug, getArticlesByAnimalType, getArticleBySlug, getAdjacentArticles } from "@/lib/queries/animals";
 import { generatePageMetadata, generateArticleSchema } from "@/lib/seo";
 import { siteConfig } from "@/config/site";
 
@@ -49,9 +50,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function AnimalArticlePage({ params }: PageProps) {
   const { slug, articleSlug } = await params;
-  const [animalType, article] = await Promise.all([
+  const [animalType, article, adjacent] = await Promise.all([
     getAnimalTypeBySlug(slug),
     getArticleBySlug(slug, articleSlug),
+    getAdjacentArticles(slug, articleSlug),
   ]);
 
   if (!animalType || !article) {
@@ -84,6 +86,23 @@ export default async function AnimalArticlePage({ params }: PageProps) {
             article={article}
             animalSlug={slug}
             animalName={animalType.name}
+          />
+          
+          <PrevNextNav
+            prev={adjacent.prev ? {
+              title: adjacent.prev.title,
+              slug: adjacent.prev.slug,
+              href: `/vase-zvieratko/${adjacent.prev.animalTypeSlug}/${adjacent.prev.slug}`,
+            } : null}
+            next={adjacent.next ? {
+              title: adjacent.next.title,
+              slug: adjacent.next.slug,
+              href: `/vase-zvieratko/${adjacent.next.animalTypeSlug}/${adjacent.next.slug}`,
+            } : null}
+            backLink={{
+              href: `/vase-zvieratko/${slug}`,
+              label: `Späť na ${animalType.name}`,
+            }}
           />
         </div>
       </section>

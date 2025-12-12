@@ -174,4 +174,30 @@ export async function getRecentBlogPosts(limit: number): Promise<BlogDto[]> {
   return getPublishedBlogs(limit);
 }
 
+export type AdjacentBlogs = {
+  prev: { title: string; slug: string } | null;
+  next: { title: string; slug: string } | null;
+};
+
+export async function getAdjacentBlogPosts(currentSlug: string): Promise<AdjacentBlogs> {
+  const posts = await getPublishedBlogs();
+  const currentIndex = posts.findIndex((p) => p.slug === currentSlug);
+  
+  if (currentIndex === -1) {
+    return { prev: null, next: null };
+  }
+
+  // Posts are sorted by createdAt desc, so "prev" is actually newer (index - 1)
+  // and "next" is older (index + 1)
+  const prev = currentIndex > 0 
+    ? { title: posts[currentIndex - 1].title, slug: posts[currentIndex - 1].slug }
+    : null;
+  
+  const next = currentIndex < posts.length - 1
+    ? { title: posts[currentIndex + 1].title, slug: posts[currentIndex + 1].slug }
+    : null;
+
+  return { prev, next };
+}
+
 export { SlugConflictError };

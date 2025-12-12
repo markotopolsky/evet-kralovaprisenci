@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { ServiceDetail } from "@/components/services/ServiceDetail";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getAllServices, getServiceBySlug } from "@/lib/queries/services";
+import { PrevNextNav } from "@/components/ui/PrevNextNav";
+import { getAllServices, getServiceBySlug, getAdjacentServices } from "@/lib/queries/services";
 import { generatePageMetadata, generateServiceSchema } from "@/lib/seo";
 
 interface PageProps {
@@ -38,7 +39,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ServicePage({ params }: PageProps) {
   const { slug } = await params;
-  const service = await getServiceBySlug(slug);
+  const [service, adjacent] = await Promise.all([
+    getServiceBySlug(slug),
+    getAdjacentServices(slug),
+  ]);
 
   if (!service) {
     notFound();
@@ -62,6 +66,23 @@ export default async function ServicePage({ params }: PageProps) {
       <section className="section-padding bg-white">
         <div className="container-friendly">
           <ServiceDetail service={service} />
+          
+          <PrevNextNav
+            prev={adjacent.prev ? {
+              title: adjacent.prev.title,
+              slug: adjacent.prev.slug,
+              href: `/services/${adjacent.prev.slug}`,
+            } : null}
+            next={adjacent.next ? {
+              title: adjacent.next.title,
+              slug: adjacent.next.slug,
+              href: `/services/${adjacent.next.slug}`,
+            } : null}
+            backLink={{
+              href: "/services",
+              label: "Späť na všetky služby",
+            }}
+          />
         </div>
       </section>
     </>

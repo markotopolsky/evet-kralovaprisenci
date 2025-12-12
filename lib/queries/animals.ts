@@ -245,5 +245,41 @@ export async function getRecentArticles(limit = 3): Promise<AnimalArticle[]> {
   return articles.slice(0, limit);
 }
 
+export type AdjacentArticles = {
+  prev: { title: string; slug: string; animalTypeSlug: string } | null;
+  next: { title: string; slug: string; animalTypeSlug: string } | null;
+};
+
+export async function getAdjacentArticles(
+  animalTypeSlug: string,
+  currentArticleSlug: string
+): Promise<AdjacentArticles> {
+  const articles = await getArticlesByAnimalType(animalTypeSlug);
+  const currentIndex = articles.findIndex((a) => a.slug === currentArticleSlug);
+  
+  if (currentIndex === -1) {
+    return { prev: null, next: null };
+  }
+
+  const prev = currentIndex > 0 
+    ? { 
+        title: articles[currentIndex - 1].title, 
+        slug: articles[currentIndex - 1].slug,
+        animalTypeSlug: articles[currentIndex - 1].animalTypeSlug
+      }
+    : null;
+  
+  const next = currentIndex < articles.length - 1
+    ? { 
+        title: articles[currentIndex + 1].title, 
+        slug: articles[currentIndex + 1].slug,
+        animalTypeSlug: articles[currentIndex + 1].animalTypeSlug
+      }
+    : null;
+
+  return { prev, next };
+}
+
+
 
 

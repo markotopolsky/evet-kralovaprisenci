@@ -16,3 +16,4 @@ export type BlogDto = Omit<Blog, "_id"> & {
   _id: string;
   excerpt: string;
 };
+

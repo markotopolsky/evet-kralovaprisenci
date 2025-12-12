@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { BlogDetail } from "@/components/blog/BlogDetail";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/queries/blog";
+import { PrevNextNav } from "@/components/ui/PrevNextNav";
+import { getAllBlogPosts, getBlogPostBySlug, getAdjacentBlogPosts } from "@/lib/queries/blog";
 import { generatePageMetadata, generateArticleSchema } from "@/lib/seo";
 import { siteConfig } from "@/config/site";
 
@@ -39,7 +40,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
-  const post = await getBlogPostBySlug(slug);
+  const [post, adjacent] = await Promise.all([
+    getBlogPostBySlug(slug),
+    getAdjacentBlogPosts(slug),
+  ]);
 
   if (!post) {
     notFound();
@@ -67,6 +71,23 @@ export default async function BlogPostPage({ params }: PageProps) {
       <section className="section-padding bg-white">
         <div className="container-friendly">
           <BlogDetail post={post} />
+          
+          <PrevNextNav
+            prev={adjacent.prev ? {
+              title: adjacent.prev.title,
+              slug: adjacent.prev.slug,
+              href: `/blog/${adjacent.prev.slug}`,
+            } : null}
+            next={adjacent.next ? {
+              title: adjacent.next.title,
+              slug: adjacent.next.slug,
+              href: `/blog/${adjacent.next.slug}`,
+            } : null}
+            backLink={{
+              href: "/blog",
+              label: "Späť na všetky články",
+            }}
+          />
         </div>
       </section>
     </>

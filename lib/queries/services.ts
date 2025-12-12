@@ -123,5 +123,30 @@ export async function getFeaturedServices(limit = 6): Promise<Service[]> {
   });
 }
 
+export type AdjacentServices = {
+  prev: { title: string; slug: string } | null;
+  next: { title: string; slug: string } | null;
+};
+
+export async function getAdjacentServices(currentSlug: string): Promise<AdjacentServices> {
+  const services = await getAllServices();
+  const currentIndex = services.findIndex((s) => s.slug === currentSlug);
+  
+  if (currentIndex === -1) {
+    return { prev: null, next: null };
+  }
+
+  const prev = currentIndex > 0 
+    ? { title: services[currentIndex - 1].title, slug: services[currentIndex - 1].slug }
+    : null;
+  
+  const next = currentIndex < services.length - 1
+    ? { title: services[currentIndex + 1].title, slug: services[currentIndex + 1].slug }
+    : null;
+
+  return { prev, next };
+}
+
+
 
 
