@@ -118,108 +118,6 @@ export function Navbar() {
   const { isMobileNavOpen, toggleMobileNav, closeMobileNav } = useUI();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  const servicesItems: DropdownItem[] = [
-    { 
-      name: "Interná medicína", 
-      href: urls.service("interna-medicina"),
-      icon: <Stethoscope className="w-5 h-5" />,
-      description: "Komplexné vyšetrenia"
-    },
-    { 
-      name: "Krvné vyšetrenia", 
-      href: urls.service("krvne-vysetrenia"),
-      icon: <Droplet className="w-5 h-5" />,
-      description: "Hematológia a biochémia"
-    },
-    { 
-      name: "USG vyšetrenie", 
-      href: urls.service("usg-vysetrenie"),
-      icon: <Waves className="w-5 h-5" />,
-      description: "Ultrazvukové zobrazenie"
-    },
-    { 
-      name: "RTG diagnostika", 
-      href: urls.service("rtg-diagnostika"),
-      icon: <Bone className="w-5 h-5" />,
-      description: "Digitálna rádiografia"
-    },
-    { 
-      name: "Chirurgia", 
-      href: urls.service("chirurgia"),
-      icon: <Bandage className="w-5 h-5" />,
-      description: "Operačné zákroky"
-    },
-    { 
-      name: "Plastika podnebia", 
-      href: urls.service("plastika-podnebia"),
-      icon: <Dog className="w-5 h-5" />,
-      description: "BOAS syndróm"
-    },
-    { 
-      name: "Dentálna hygiena", 
-      href: urls.service("dentalna-hygiena"),
-      icon: <Smile className="w-5 h-5" />,
-      description: "Starostlivosť o chrup"
-    },
-    { 
-      name: "PHOVIA terapia", 
-      href: urls.service("phovia-terapia"),
-      icon: <Sun className="w-5 h-5" />,
-      description: "Svetelná liečba kože"
-    },
-    { 
-      name: "Hospitalizácia 24H", 
-      href: urls.service("hospitalizacia"),
-      icon: <Hospital className="w-5 h-5" />,
-      description: "Nepretržitá starostlivosť"
-    },
-    { 
-      name: "Pohotovosť", 
-      href: urls.service("pohotovost"),
-      icon: <Ambulance className="w-5 h-5" />,
-      description: "Urgentná pomoc"
-    },
-    { 
-      name: "Krmivá a doplnky", 
-      href: urls.service("krmiva-doplnky"),
-      icon: <ShoppingBag className="w-5 h-5" />,
-      description: "Veterinárna výživa"
-    },
-    { 
-      name: "Konzultácie", 
-      href: urls.service("konzultacie"),
-      icon: <MessageCircle className="w-5 h-5" />,
-      description: "Osobné poradenstvo"
-    },
-  ];
-
-  const animalsItems: DropdownItem[] = [
-    { 
-      name: "Psy", 
-      href: "/vase-zvieratko/psy",
-      icon: <Dog className="w-5 h-5" />,
-      description: "Starostlivosť o psov"
-    },
-    { 
-      name: "Mačky", 
-      href: "/vase-zvieratko/macky",
-      icon: <Cat className="w-5 h-5" />,
-      description: "Starostlivosť o mačky"
-    },
-    { 
-      name: "Hlodavce", 
-      href: "/vase-zvieratko/hlodavce",
-      icon: <Rabbit className="w-5 h-5" />,
-      description: "Morčatá, králiky, škrečky"
-    },
-    { 
-      name: "Aktuality", 
-      href: "/vase-zvieratko/aktuality",
-      icon: <Newspaper className="w-5 h-5" />,
-      description: "Novinky a dôležité informácie"
-    },
-  ];
-
   const aboutItems: DropdownItem[] = [
     { 
       name: "O klinike", 
@@ -269,9 +167,9 @@ export function Navbar() {
             <Image
               src="/logo/logo-small.svg"
               alt=""
-              width={44}
-              height={44}
-              className="h-11 w-auto"
+              width={72}
+              height={72}
+              className="h-14 w-auto md:h-16 shrink-0"
               aria-hidden="true"
             />
           </Link>
@@ -290,23 +188,29 @@ export function Navbar() {
               Domov
             </Link>
 
-            {/* Services Dropdown */}
-            <DropdownMenu
-              label="Služby"
-              items={servicesItems}
-              isOpen={openDropdown === "services"}
-              onToggle={() => handleDropdownToggle("services")}
-              onClose={closeDropdown}
-            />
+            {/* Services link */}
+            <Link
+              href={urls.services}
+              className={`px-3 py-2 text-[15px] font-medium rounded-md transition-colors ${
+                pathname.startsWith("/sluzby")
+                  ? "text-[#3C8C80] bg-[#3C8C80]/5"
+                  : "text-[#4a4a4a] hover:text-[#3C8C80] hover:bg-[#f8f8f6]"
+              }`}
+            >
+              Služby
+            </Link>
 
-            {/* Animals Dropdown */}
-            <DropdownMenu
-              label="Vaše zvieratko"
-              items={animalsItems}
-              isOpen={openDropdown === "animals"}
-              onToggle={() => handleDropdownToggle("animals")}
-              onClose={closeDropdown}
-            />
+            {/* Animals link */}
+            <Link
+              href={urls.animals}
+              className={`px-3 py-2 text-[15px] font-medium rounded-md transition-colors ${
+                pathname.startsWith("/vase-zvieratko")
+                  ? "text-[#3C8C80] bg-[#3C8C80]/5"
+                  : "text-[#4a4a4a] hover:text-[#3C8C80] hover:bg-[#f8f8f6]"
+              }`}
+            >
+              Vaše zvieratko
+            </Link>
 
             {/* About Dropdown */}
             <DropdownMenu
@@ -387,41 +291,31 @@ export function Navbar() {
               Domov
             </Link>
 
-            {/* Services Section */}
-            <div className="pt-2">
-              <p className="px-4 py-2 text-[13px] font-semibold text-[#6b6b6b] uppercase tracking-wide">
-                Služby
-              </p>
-              {servicesItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeMobileNav}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] text-[#2A2A2A] hover:bg-[#f8f8f6] transition-colors"
-                >
-                  <span className="text-[#3C8C80]">{item.icon}</span>
-                  {item.name}
-                </Link>
-              ))}
-            </div>
+            {/* Services link */}
+            <Link
+              href={urls.services}
+              onClick={closeMobileNav}
+              className={`block px-4 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                pathname.startsWith("/sluzby")
+                  ? "text-[#3C8C80] bg-[#3C8C80]/5"
+                  : "text-[#2A2A2A] hover:bg-[#f8f8f6]"
+              }`}
+            >
+              Služby
+            </Link>
 
-            {/* Animals Section */}
-            <div className="pt-2">
-              <p className="px-4 py-2 text-[13px] font-semibold text-[#6b6b6b] uppercase tracking-wide">
-                Vaše zvieratko
-              </p>
-              {animalsItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeMobileNav}
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] text-[#2A2A2A] hover:bg-[#f8f8f6] transition-colors"
-                >
-                  <span className="text-[#3C8C80]">{item.icon}</span>
-                  {item.name}
-                </Link>
-              ))}
-            </div>
+            {/* Animals link */}
+            <Link
+              href={urls.animals}
+              onClick={closeMobileNav}
+              className={`block px-4 py-3 rounded-lg text-[15px] font-medium transition-colors ${
+                pathname.startsWith("/vase-zvieratko")
+                  ? "text-[#3C8C80] bg-[#3C8C80]/5"
+                  : "text-[#2A2A2A] hover:bg-[#f8f8f6]"
+              }`}
+            >
+              Vaše zvieratko
+            </Link>
 
             {/* About Section */}
             <div className="pt-2">
@@ -456,14 +350,6 @@ export function Navbar() {
 
             {/* CTA Buttons Mobile */}
             <div className="pt-4 space-y-3">
-              <a
-                href={`tel:${siteConfig.phone}`}
-                onClick={closeMobileNav}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 text-[15px] font-medium text-[#3C8C80] border border-[#3C8C80] rounded-lg"
-              >
-                <Phone className="w-4 h-4" />
-                {siteConfig.phone}
-              </a>
               <Link
                 href={siteConfig.bookingUrl}
                 target="_blank"

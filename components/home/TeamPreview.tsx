@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface TeamMember {
@@ -10,6 +11,9 @@ interface TeamMember {
   image: string;
 }
 
+const PROFILE_IMAGE_URL =
+  "https://res.cloudinary.com/dl6xldrhk/image/upload/v1765729208/lighter-3843886857_ujr5rr.jpg";
+
 const teamMembers: TeamMember[] = [
   {
     name: "MVDr. Ján Novák",
@@ -18,7 +22,7 @@ const teamMembers: TeamMember[] = [
       sk: "Špecialista na malé zvieratá s 15-ročnou praxou.",
       de: "Spezialist für Kleintiere mit 15 Jahren Erfahrung.",
     },
-    image: "👨‍⚕️",
+    image: PROFILE_IMAGE_URL,
   },
   {
     name: "MVDr. Anna Kováčová",
@@ -27,7 +31,7 @@ const teamMembers: TeamMember[] = [
       sk: "Expertka na ortopédiu a mäkké tkanivá.",
       de: "Expertin für Orthopädie und Weichteilchirurgie.",
     },
-    image: "👩‍⚕️",
+    image: PROFILE_IMAGE_URL,
   },
   {
     name: "MVDr. Peter Horváth",
@@ -36,7 +40,7 @@ const teamMembers: TeamMember[] = [
       sk: "Zameraný na dentálnu starostlivosť zvierat.",
       de: "Spezialisiert auf zahnärztliche Versorgung von Tieren.",
     },
-    image: "👨‍⚕️",
+    image: PROFILE_IMAGE_URL,
   },
 ];
 
@@ -65,7 +69,13 @@ export function TeamPreview() {
           {teamMembers.map((member, index) => (
             <div key={index} className="card-friendly p-6 text-center">
               <div className="w-24 h-24 bg-[#3C8C80]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-5xl">{member.image}</span>
+                <Image
+                  src={member.image}
+                  alt={`${member.name} profilová fotografia`}
+                  width={96}
+                  height={96}
+                  className="w-16 h-16 object-contain"
+                />
               </div>
               <h3 className="font-semibold text-lg text-[#2A2A2A] mb-1">
                 {member.name}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Clock3, MapPin, Phone, CalendarClock } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -12,7 +13,7 @@ export function BasicInfoCards() {
       {/* Opening Hours Card */}
       <div className="card-friendly p-6">
         <div className="text-center">
-          <span className="text-4xl block mb-4">🕐</span>
+          <Clock3 className="w-10 h-10 mx-auto mb-4 text-[#3C8C80]" aria-hidden />
           <h3 className="font-semibold text-lg text-[#2A2A2A] mb-4">
             {t.cards.openingHours}
           </h3>
@@ -48,7 +49,7 @@ export function BasicInfoCards() {
       {/* Location Card */}
       <div className="card-friendly p-6">
         <div className="text-center">
-          <span className="text-4xl block mb-4">📍</span>
+          <MapPin className="w-10 h-10 mx-auto mb-4 text-[#3C8C80]" aria-hidden />
           <h3 className="font-semibold text-lg text-[#2A2A2A] mb-4">
             {t.cards.findUs}
           </h3>
@@ -71,7 +72,7 @@ export function BasicInfoCards() {
       {/* Contact Card */}
       <div className="card-friendly p-6">
         <div className="text-center">
-          <span className="text-4xl block mb-4">📞</span>
+          <Phone className="w-10 h-10 mx-auto mb-4 text-[#3C8C80]" aria-hidden />
           <h3 className="font-semibold text-lg text-[#2A2A2A] mb-4">
             {t.cards.contact}
           </h3>
@@ -93,20 +94,20 @@ export function BasicInfoCards() {
       </div>
 
       {/* Online Booking Card */}
-      <div className="card-friendly p-6 bg-[#3C8C80] text-white">
+      <div className="card-friendly p-6 bg-[#F2F7F5]">
         <div className="text-center">
-          <span className="text-4xl block mb-4">📅</span>
-          <h3 className="font-semibold text-lg mb-4">
+          <CalendarClock className="w-10 h-10 mx-auto mb-4 text-[#3C8C80]" aria-hidden />
+          <h3 className="font-semibold text-lg text-[#2A2A2A] mb-4">
             {t.cards.onlineBooking}
           </h3>
-          <p className="text-sm text-white/80 mb-6">
+          <p className="text-sm text-[#5C5C5C] mb-6">
             {t.cards.bookComfortably}
           </p>
           <Link
             href={siteConfig.bookingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center w-full px-4 py-3 bg-white text-[#3C8C80] rounded-lg font-semibold hover:bg-[#F2F7F5] transition-colors"
+            className="inline-flex items-center gap-2 text-[#3C8C80] font-medium hover:underline"
           >
             {t.nav.book}
           </Link>

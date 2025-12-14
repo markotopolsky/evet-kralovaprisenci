@@ -236,3 +236,5 @@ export async function getAdjacentServices(currentSlug: string): Promise<Adjacent
 
   return { prev, next };
 }
+
+

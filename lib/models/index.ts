@@ -4,6 +4,9 @@ export type { AnimalType } from "./AnimalType";
 export type { AnimalArticle } from "./AnimalArticle";
 export type { Blog } from "./Blog";
 export type { Banner } from "./Banner";
+export type { ClinicStatus } from "./ClinicStatus";
+
+
 
 
 

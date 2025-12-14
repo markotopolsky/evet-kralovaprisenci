@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 import { generatePageMetadata } from "@/lib/seo";
 import { siteConfig } from "@/config/site";
@@ -11,24 +12,27 @@ export const metadata: Metadata = generatePageMetadata({
   path: urls.about,
 });
 
+const PROFILE_IMAGE_URL =
+  "https://res.cloudinary.com/dl6xldrhk/image/upload/v1765729208/lighter-3843886857_ujr5rr.jpg";
+
 const teamMembers = [
   {
     name: "MVDr. Ján Novák",
     role: "Hlavný veterinár",
     description: "Špecialista na malé zvieratá s 15-ročnou praxou. Zameraný na internú medicínu a chirurgiu.",
-    emoji: "👨‍⚕️",
+    image: PROFILE_IMAGE_URL,
   },
   {
     name: "MVDr. Anna Kováčová",
     role: "Veterinárna chirurgička",
     description: "Expertka na ortopédiu a mäkké tkanivá. Špecializuje sa na komplexné chirurgické zákroky.",
-    emoji: "👩‍⚕️",
+    image: PROFILE_IMAGE_URL,
   },
   {
     name: "MVDr. Peter Horváth",
     role: "Veterinár - stomatológia",
     description: "Zameraný na dentálnu starostlivosť zvierat a preventívnu medicínu.",
-    emoji: "👨‍⚕️",
+    image: PROFILE_IMAGE_URL,
   },
 ];
 
@@ -105,7 +109,13 @@ export default function AboutPage() {
             {teamMembers.map((member, index) => (
               <div key={index} className="card-friendly p-6 text-center">
                 <div className="w-24 h-24 bg-[#3C8C80]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-5xl">{member.emoji}</span>
+                  <Image
+                    src={member.image}
+                    alt={`${member.name} profilová fotografia`}
+                    width={96}
+                    height={96}
+                    className="w-16 h-16 object-contain"
+                  />
                 </div>
                 <h3 className="font-semibold text-lg text-[#2A2A2A] mb-1">
                   {member.name}

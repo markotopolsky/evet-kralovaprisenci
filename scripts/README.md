@@ -118,3 +118,5 @@ CF_API_KEY="${CF_API_KEY}"
 - **Script not triggering:** Check if cron is running: `systemctl status cron`
 - **API errors:** Verify your Zone ID and API key are correct
 - **Permission denied:** Make sure the script is executable and log directory is writable
+
+

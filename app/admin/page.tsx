@@ -8,34 +8,89 @@ interface PromoData {
   imageBase64: string | null;
 }
 
+interface ClinicStatusData {
+  forceClosed: boolean;
+  forceClosedDate: string;
+}
+
 export default function AdminPage() {
+  // Promo state
   const [enabled, setEnabled] = useState(false);
   const [barText, setBarText] = useState("");
   const [imageBase64, setImageBase64] = useState<string | null>(null);
+  
+  // Clinic status state
+  const [forceClosed, setForceClosed] = useState(false);
+  const [clinicStatusDate, setClinicStatusDate] = useState("");
+  const [savingClinicStatus, setSavingClinicStatus] = useState(false);
+  const [clinicStatusMessage, setClinicStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Fetch current promo on mount
+  // Fetch current promo and clinic status on mount
   useEffect(() => {
-    async function fetchPromo() {
+    async function fetchData() {
       try {
-        const res = await fetch("/api/admin/promo");
-        if (res.ok) {
-          const data: PromoData = await res.json();
+        // Fetch both in parallel
+        const [promoRes, clinicStatusRes] = await Promise.all([
+          fetch("/api/admin/promo", { cache: "no-store" }),
+          fetch("/api/admin/clinic-status", { cache: "no-store" }),
+        ]);
+
+        if (promoRes.ok) {
+          const data: PromoData = await promoRes.json();
           setEnabled(data.enabled);
           setBarText(data.barText);
           setImageBase64(data.imageBase64);
         }
+
+        if (clinicStatusRes.ok) {
+          const data: ClinicStatusData = await clinicStatusRes.json();
+          setForceClosed(data.forceClosed);
+          setClinicStatusDate(data.forceClosedDate);
+        }
       } catch (error) {
-        console.error("Error fetching promo:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchPromo();
+    fetchData();
   }, []);
+
+  // Handle clinic status toggle
+  async function handleClinicStatusToggle(newValue: boolean) {
+    setSavingClinicStatus(true);
+    setClinicStatusMessage(null);
+
+    try {
+      const res = await fetch("/api/admin/clinic-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ forceClosed: newValue }),
+      });
+
+      if (res.ok) {
+        const data: ClinicStatusData = await res.json();
+        setForceClosed(data.forceClosed);
+        setClinicStatusDate(data.forceClosedDate);
+        setClinicStatusMessage({ 
+          type: "success", 
+          text: newValue ? "Klinika je dnes zatvorená" : "Klinika je otvorená podľa otváracích hodín" 
+        });
+      } else {
+        const error = await res.json();
+        setClinicStatusMessage({ type: "error", text: error.error || "Chyba pri ukladaní" });
+      }
+    } catch (error) {
+      console.error("Error updating clinic status:", error);
+      setClinicStatusMessage({ type: "error", text: "Chyba pri ukladaní" });
+    } finally {
+      setSavingClinicStatus(false);
+    }
+  }
 
   // Handle file upload
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -93,7 +148,77 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-2xl mx-auto px-4">
+      <div className="max-w-2xl mx-auto px-4 space-y-8">
+        {/* Clinic Status Section */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Stav kliniky
+          </h1>
+          <p className="text-gray-500 mb-6">
+            Ak nastane neočakávaná situácia, môžeš označiť kliniku ako zatvorenú na dnešný deň.
+          </p>
+
+          <div className="space-y-4">
+            {/* Force Closed Toggle */}
+            <div 
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                forceClosed 
+                  ? "border-red-300 bg-red-50" 
+                  : "border-green-300 bg-green-50"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className={`w-3 h-3 rounded-full ${forceClosed ? "bg-red-500" : "bg-green-500 animate-pulse"}`} />
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      {forceClosed ? "Klinika je dnes ZATVORENÁ" : "Klinika funguje normálne"}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {clinicStatusDate && `Dátum: ${clinicStatusDate}`}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleClinicStatusToggle(!forceClosed)}
+                  disabled={savingClinicStatus}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    forceClosed
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "bg-red-600 text-white hover:bg-red-700"
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {savingClinicStatus 
+                    ? "Ukladám..." 
+                    : forceClosed 
+                      ? "Otvoriť kliniku" 
+                      : "Zatvoriť kliniku dnes"
+                  }
+                </button>
+              </div>
+            </div>
+
+            {/* Status message */}
+            {clinicStatusMessage && (
+              <div
+                className={`px-4 py-3 rounded-lg ${
+                  clinicStatusMessage.type === "success"
+                    ? "bg-green-50 text-green-700 border border-green-200"
+                    : "bg-red-50 text-red-700 border border-red-200"
+                }`}
+              >
+                {clinicStatusMessage.text}
+              </div>
+            )}
+
+            <p className="text-sm text-gray-500">
+              ⚠️ Ak označíš kliniku ako zatvorenú, návštevníkom webu sa zobrazí iba ikona „zatvorené" bez otváracích hodín. 
+              Tento stav sa automaticky resetuje nasledujúci deň.
+            </p>
+          </div>
+        </div>
+
+        {/* Promo Settings Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Promo nastavenia

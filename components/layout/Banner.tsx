@@ -29,36 +29,57 @@ export function Banner() {
     hours: string;
     isOpen: boolean;
   } | null>(null);
+  const [forceClosed, setForceClosed] = useState(false);
 
-  // Fetch promo from API on mount
+  // Fetch promo and clinic status from API on mount
   useEffect(() => {
-    async function fetchPromo() {
+    async function fetchData() {
       try {
-        const res = await fetch("/api/admin/promo");
-        if (res.ok) {
-          const data = await res.json();
-          console.log("Fetched promo:", data);
+        // Fetch promo data
+        const promoRes = await fetch("/api/admin/promo", { 
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" }
+        });
+
+        if (promoRes.ok) {
+          const data = await promoRes.json();
+          console.log("Banner: Fetched promo:", data);
           
+          // Set promo if enabled and has text
           if (data.enabled && data.barText) {
             setPromo(data);
             
-            // Check if user has seen the promo
+            // Check if user has seen the promo (for modal auto-open)
             const seen = localStorage.getItem(PROMO_SEEN_KEY);
-            console.log("Promo seen:", seen);
+            console.log("Banner: Promo seen in localStorage:", seen);
             
             if (!seen) {
-              // First visit - show modal automatically
-              console.log("Opening promo modal");
+              console.log("Banner: First visit - opening promo modal");
               setShowPromoModal(true);
             }
+          } else {
+            console.log("Banner: Promo not enabled or no barText", { enabled: data.enabled, barText: data.barText });
           }
+        } else {
+          console.error("Banner: Failed to fetch promo, status:", promoRes.status);
+        }
+
+        // Fetch clinic status separately
+        const clinicStatusRes = await fetch("/api/admin/clinic-status", { 
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" }
+        });
+
+        if (clinicStatusRes.ok) {
+          const clinicData = await clinicStatusRes.json();
+          setForceClosed(clinicData.forceClosed);
         }
       } catch (error) {
-        console.error("Error fetching promo:", error);
+        console.error("Banner: Error fetching data:", error);
       }
     }
     
-    fetchPromo();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -87,19 +108,23 @@ export function Banner() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 lg:gap-3 text-sm font-medium">
             
             {/* Top row on mobile: Phone + Location */}
-            <div className="flex items-center justify-center lg:justify-end gap-4 sm:gap-5 order-1 lg:order-2">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-2 sm:gap-5 order-1 lg:order-2 text-center sm:text-left">
+              <a
+                href="https://www.google.com/maps/place/Veterin%C3%A1rna+klinika+E-VET/@48.1987493,17.4414865,16.22z/data=!4m6!3m5!1s0x476c9da3aba06909:0x60694c3550d7dbb6!8m2!3d48.1974295!4d17.442523!16s%2Fg%2F11qpxrcs7m?entry=tts&skid=e38c6fc2-10d7-41a2-b0b5-638fddc3e693"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-white/90 justify-center sm:justify-start"
+              >
+                <MapPin className="w-4 h-4" />
+                <span>{siteConfig.address.street}, {siteConfig.address.city}</span>
+              </a>
               <a
                 href={`tel:${siteConfig.phone}`}
-                className="flex items-center gap-1.5 hover:text-white/80 transition-colors"
+                className="flex items-center gap-1.5 hover:text-white/80 transition-colors justify-center sm:justify-start"
               >
                 <Phone className="w-4 h-4" />
                 <span>{siteConfig.phone}</span>
               </a>
-              <span className="flex items-center gap-1.5 text-white/90">
-                <MapPin className="w-4 h-4" />
-                <span className="hidden sm:inline">{siteConfig.address.street}, </span>
-                {siteConfig.address.city}
-              </span>
             </div>
 
             {/* Bottom row on mobile: Promo + Open status */}
@@ -125,7 +150,16 @@ export function Banner() {
               )}
 
               {/* Open/Closed status */}
-              {todayInfo && (
+              {forceClosed ? (
+                // Admin manually closed - show only closed indicator, no hours
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-500/30">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-300" />
+                    {t.infoBar.closed}
+                  </span>
+                </div>
+              ) : todayInfo && (
+                // Normal operation - show status with hours
                 <div className="flex items-center gap-2">
                   <span
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
