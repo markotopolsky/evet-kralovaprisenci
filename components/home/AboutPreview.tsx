@@ -1,43 +1,65 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { urls } from "@/config/urls";
-import { useLanguage } from "@/context/LanguageContext";
-import {
-  Building2,
-  Users,
-  HeartHandshake,
-  Clock3,
-  Dog,
-  Cat,
-  Rabbit,
-  Info,
-  LucideIcon,
-} from "lucide-react";
+import { text } from "@/lib/i18n/translations";
+import { Building2, Users, HeartHandshake, Clock3, Info } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+// =============================================================================
+// TYPES
+// =============================================================================
+
+interface FeatureItem {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+// =============================================================================
+// FEATURE CARD COMPONENT
+// =============================================================================
+
+function FeatureCard({ icon: Icon, title, description }: FeatureItem) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="w-10 h-10 bg-primary-light rounded-lg flex items-center justify-center flex-shrink-0">
+        <Icon className="w-5 h-5 text-primary" />
+      </div>
+      <div>
+        <h3 className="font-semibold text-text mb-1">{title}</h3>
+        <p className="text-sm text-text-muted">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================================
+// MAIN COMPONENT
+// =============================================================================
 
 export function AboutPreview() {
-  const { t } = useLanguage();
-
-  const features: { icon: LucideIcon; title: string; description: string }[] = [
+  const features: FeatureItem[] = [
     {
       icon: Building2,
-      title: t.about.modernClinic,
-      description: t.about.modernClinicDesc,
+      title: text.about.modernClinic,
+      description: text.about.modernClinicDesc,
     },
     {
       icon: Users,
-      title: t.about.experiencedTeam,
-      description: t.about.experiencedTeamDesc,
+      title: text.about.experiencedTeam,
+      description: text.about.experiencedTeamDesc,
     },
     {
       icon: HeartHandshake,
-      title: t.about.individualCare,
-      description: t.about.individualCareDesc,
+      title: text.about.individualCare,
+      description: text.about.individualCareDesc,
     },
     {
       icon: Clock3,
-      title: t.about.flexibleHours,
-      description: t.about.flexibleHoursDesc,
+      title: text.about.flexibleHours,
+      description: text.about.flexibleHoursDesc,
     },
   ];
 
@@ -47,65 +69,64 @@ export function AboutPreview() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <span className="badge mb-4 inline-flex items-center gap-2">
-              <Info className="w-4 h-4" /> {t.about.badge}
+              <Info className="w-4 h-4" /> {text.about.badge}
             </span>
             <h2
               id="about-preview-heading"
-              className="text-3xl sm:text-4xl font-bold text-[#2A2A2A] mb-6"
+              className="text-3xl sm:text-4xl font-bold text-text mb-6"
             >
-              {t.about.title}
+              {text.about.title}
             </h2>
-            <p className="text-lg text-[#5C5C5C] mb-8">
-              {t.about.description}
-            </p>
+            <p className="text-lg text-text-muted mb-8">{text.about.description}</p>
 
             <div className="grid sm:grid-cols-2 gap-4 mb-8">
-              {features.map((feature, index) => {
-                const Icon = feature.icon;
-                return (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-[#F2F7F5] rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-[#3C8C80]" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-[#2A2A2A] mb-1">
-                        {feature.title}
-                      </h3>
-                      <p className="text-sm text-[#5C5C5C]">
-                        {feature.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+              {features.map((feature, index) => (
+                <FeatureCard
+                  key={index}
+                  icon={feature.icon}
+                  title={feature.title}
+                  description={feature.description}
+                />
+              ))}
             </div>
 
             <Link href={urls.about} className="btn-secondary">
-              {t.about.moreAbout} →
+              {text.about.moreAbout} →
             </Link>
           </div>
 
           <div className="relative">
-            <div className="bg-[#F2F7F5] rounded-2xl p-8">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="bg-white rounded-xl p-6 shadow-gentle">
-                  <p className="text-4xl font-bold text-[#3C8C80] mb-2">15+</p>
-                  <p className="text-sm text-[#5C5C5C]">{t.about.yearsExperience}</p>
+            <div className="bg-primary-light rounded-2xl p-8">
+              <div className="grid grid-cols-2 grid-rows-2 gap-0 overflow-hidden rounded-xl aspect-[4/3]">
+                {/* Large photo - 1/2 width, full height (spans 2 rows) */}
+                <div className="row-span-2 relative rounded-l-xl overflow-hidden">
+                  <Image
+                    src="https://res.cloudinary.com/dl6xldrhk/image/upload/v1766344728/IMG-20250823-WA0000_dl57rp.jpg"
+                    alt="Clinic photo"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-                <div className="bg-white rounded-xl p-6 shadow-gentle">
-                  <p className="text-4xl font-bold text-[#3C8C80] mb-2">5000+</p>
-                  <p className="text-sm text-[#5C5C5C]">{t.about.happyClients}</p>
+                
+                {/* Small photo 1 - 1/4 width, top right */}
+                <div className="relative rounded-tr-xl overflow-hidden">
+                  <Image
+                    src="https://res.cloudinary.com/dl6xldrhk/image/upload/v1766344612/IMG-20251210-WA0029_uhl5ck.jpg"
+                    alt="Clinic photo"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-                <div className="bg-white rounded-xl p-6 shadow-gentle">
-                  <p className="text-4xl font-bold text-[#3C8C80] mb-2">4.9</p>
-                  <p className="text-sm text-[#5C5C5C]">{t.about.rating}</p>
+                
+                {/* Small photo 2 - 1/4 width, bottom right */}
+                <div className="relative rounded-br-xl overflow-hidden">
+                  <Image
+                    src="https://res.cloudinary.com/dl6xldrhk/image/upload/v1766344612/IMG-20251210-WA0049_tvmkdr.jpg"
+                    alt="Clinic photo"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-              </div>
-
-              <div className="mt-6 flex items-center justify-center gap-4 text-[#3C8C80]">
-                <Dog className="w-12 h-12" />
-                <Cat className="w-12 h-12" />
-                <Rabbit className="w-12 h-12" />
               </div>
             </div>
           </div>
@@ -114,7 +135,3 @@ export function AboutPreview() {
     </section>
   );
 }
-
-
-
-

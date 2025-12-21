@@ -1,75 +1,67 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { AnimalType } from "@/lib/models/AnimalType";
-import { useLanguage } from "@/context/LanguageContext";
 
 interface AnimalTypesListProps {
   animalTypes: AnimalType[];
 }
 
-const animalIcons: Record<string, string> = {
-  psy: "🐕",
-  macky: "🐈",
-  hlodavce: "🐹",
-  vtaky: "🐦",
-  default: "🐾",
-};
+// Default image for Aktuality card
+const AKTUALITY_IMAGE = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=200&h=200&fit=crop";
 
 export function AnimalTypesList({ animalTypes }: AnimalTypesListProps) {
-  const { language } = useLanguage();
-
   return (
     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {animalTypes.map((animal) => (
-        <Link
-          key={animal._id}
-          href={`/vase-zvieratko/${animal.slug}`}
-          className="card-friendly p-8 text-center group"
-        >
-          <div className="w-24 h-24 bg-[#3C8C80]/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-[#3C8C80]/20 transition-colors">
-            <span className="text-5xl">
-              {animalIcons[animal.slug] || animalIcons.default}
+      {animalTypes.map((animal) => {
+        return (
+          <Link
+            key={animal._id}
+            href={`/vase-zvieratko/${animal.slug}`}
+            className="card-friendly p-8 text-center group"
+          >
+            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors overflow-hidden relative">
+              {animal.image && (
+                <Image
+                  src={animal.image}
+                  alt={animal.name}
+                  fill
+                  className="object-cover rounded-full"
+                />
+              )}
+            </div>
+            <h2 className="font-semibold text-xl text-text mb-2 group-hover:text-primary transition-colors">
+              {animal.name}
+            </h2>
+            <p className="text-sm text-text-muted">{animal.description}</p>
+            <span className="inline-flex items-center gap-1 text-primary font-medium text-sm mt-4">
+              Články a rady →
             </span>
-          </div>
-          <h2 className="font-semibold text-xl text-[#2A2A2A] mb-2 group-hover:text-[#3C8C80] transition-colors">
-            {animal.name}
-          </h2>
-          <p className="text-sm text-[#5C5C5C]">
-            {animal.description}
-          </p>
-          <span className="inline-flex items-center gap-1 text-[#3C8C80] font-medium text-sm mt-4">
-            {language === "sk" ? "Články a rady" : "Artikel und Tipps"} →
-          </span>
-        </Link>
-      ))}
-      
+          </Link>
+        );
+      })}
+
       {/* Aktuality Card */}
-      <Link
-        href="/vase-zvieratko/aktuality"
-        className="card-friendly p-8 text-center group"
-      >
-        <div className="w-24 h-24 bg-[#3C8C80]/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-[#3C8C80]/20 transition-colors">
-          <span className="text-5xl">📰</span>
+      <Link href="/vase-zvieratko/aktuality" className="card-friendly p-8 text-center group">
+        <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors overflow-hidden relative">
+          <Image
+            src={AKTUALITY_IMAGE}
+            alt="Aktuality"
+            fill
+            className="object-cover rounded-full"
+          />
         </div>
-        <h2 className="font-semibold text-xl text-[#2A2A2A] mb-2 group-hover:text-[#3C8C80] transition-colors">
-          {language === "sk" ? "Aktuality" : "Aktuelles"}
+        <h2 className="font-semibold text-xl text-text mb-2 group-hover:text-primary transition-colors">
+          Aktuality
         </h2>
-        <p className="text-sm text-[#5C5C5C]">
-          {language === "sk" 
-            ? "Novinky, varovania a dôležité informácie pre majiteľov zvierat"
-            : "Neuigkeiten, Warnungen und wichtige Informationen für Tierbesitzer"}
+        <p className="text-sm text-text-muted">
+          Novinky, varovania a dôležité informácie pre majiteľov zvierat
         </p>
-        <span className="inline-flex items-center gap-1 text-[#3C8C80] font-medium text-sm mt-4">
-          {language === "sk" ? "Zobraziť aktuality" : "Aktuelles anzeigen"} →
+        <span className="inline-flex items-center gap-1 text-primary font-medium text-sm mt-4">
+          Zobraziť aktuality →
         </span>
       </Link>
     </div>
   );
 }
-
-
-
-
-
-

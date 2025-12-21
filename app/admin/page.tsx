@@ -29,21 +29,47 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  // Debug: Log when imageBase64 changes
+  useEffect(() => {
+    console.log("imageBase64 state changed:", {
+      hasValue: !!imageBase64,
+      length: imageBase64?.length || 0,
+      preview: imageBase64?.substring(0, 50) || "none"
+    });
+  }, [imageBase64]);
+
   // Fetch current promo and clinic status on mount
   useEffect(() => {
     async function fetchData() {
       try {
-        // Fetch both in parallel
+        // Fetch both in parallel with cache-busting
+        const timestamp = Date.now();
         const [promoRes, clinicStatusRes] = await Promise.all([
-          fetch("/api/admin/promo", { cache: "no-store" }),
-          fetch("/api/admin/clinic-status", { cache: "no-store" }),
+          fetch(`/api/admin/promo?t=${timestamp}`, { 
+            cache: "no-store",
+            headers: { "Cache-Control": "no-cache" }
+          }),
+          fetch(`/api/admin/clinic-status?t=${timestamp}`, { 
+            cache: "no-store",
+            headers: { "Cache-Control": "no-cache" }
+          }),
         ]);
 
         if (promoRes.ok) {
           const data: PromoData = await promoRes.json();
+          console.log("Fetched promo data:", { 
+            enabled: data.enabled, 
+            barText: data.barText, 
+            hasImage: !!data.imageBase64,
+            imageLength: data.imageBase64?.length 
+          });
           setEnabled(data.enabled);
           setBarText(data.barText);
-          setImageBase64(data.imageBase64);
+          if (data.imageBase64 && typeof data.imageBase64 === 'string' && data.imageBase64.length > 0) {
+            setImageBase64(data.imageBase64);
+          } else {
+            setImageBase64(null);
+          }
         }
 
         if (clinicStatusRes.ok) {
@@ -125,6 +151,8 @@ export default function AdminPage() {
       });
 
       if (res.ok) {
+        const savedData = await res.json();
+        setImageBase64(savedData.imageBase64);
         setStatus({ type: "success", text: "Úspešne uložené" });
       } else {
         const error = await res.json();
@@ -274,14 +302,25 @@ export default function AdminPage() {
                 onChange={handleFileChange}
                 className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#3C8C80] file:text-white hover:file:bg-[#2d6b62] file:cursor-pointer"
               />
-              {imageBase64 && (
+              {imageBase64 && imageBase64.length > 0 ? (
                 <div className="mt-3">
                   <p className="text-sm text-gray-500 mb-2">Náhľad obrázku:</p>
-                  <img
-                    src={`data:image/png;base64,${imageBase64}`}
-                    alt="Preview"
-                    className="max-w-full max-h-64 rounded-lg border border-gray-200"
-                  />
+                  <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
+                    <img
+                      src={`data:image/*;base64,${imageBase64}`}
+                      alt="Preview"
+                      className="max-w-full max-h-64 rounded-lg"
+                      style={{ display: 'block' }}
+                      onError={(e) => {
+                        console.error("Image load error");
+                        console.error("Image base64 length:", imageBase64?.length);
+                        console.error("First 100 chars:", imageBase64?.substring(0, 100));
+                      }}
+                      onLoad={() => {
+                        console.log("Image loaded successfully, length:", imageBase64?.length);
+                      }}
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={() => setImageBase64(null)}
@@ -290,7 +329,9 @@ export default function AdminPage() {
                     Odstrániť obrázok
                   </button>
                 </div>
-              )}
+              ) : !loading ? (
+                <p className="text-sm text-gray-400 mt-2">Žiadny obrázok nahraný</p>
+              ) : null}
             </div>
 
             {/* Status message */}

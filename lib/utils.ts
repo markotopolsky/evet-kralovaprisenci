@@ -11,30 +11,28 @@ export function slugify(text: string): string {
     .replace(/-+$/, "");
 }
 
-export function formatDate(date: Date | string, language: "sk" | "de" = "sk"): string {
+export function formatDate(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  
+
   const options: Intl.DateTimeFormatOptions = {
     day: "numeric",
     month: "long",
     year: "numeric",
   };
-  
-  const locale = language === "de" ? "de-DE" : "sk-SK";
-  return d.toLocaleDateString(locale, options);
+
+  return d.toLocaleDateString("sk-SK", options);
 }
 
-export function formatDateShort(date: Date | string, language: "sk" | "de" = "sk"): string {
+export function formatDateShort(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
-  
+
   const options: Intl.DateTimeFormatOptions = {
     day: "numeric",
     month: "numeric",
     year: "numeric",
   };
-  
-  const locale = language === "de" ? "de-DE" : "sk-SK";
-  return d.toLocaleDateString(locale, options);
+
+  return d.toLocaleDateString("sk-SK", options);
 }
 
 export function validateEmail(email: string): boolean {
@@ -72,10 +70,8 @@ export function validateInput(validations: { valid: boolean; error?: string }[])
   valid: boolean;
   errors: string[];
 } {
-  const errors = validations
-    .filter((v) => !v.valid && v.error)
-    .map((v) => v.error as string);
-  
+  const errors = validations.filter((v) => !v.valid && v.error).map((v) => v.error as string);
+
   return {
     valid: errors.length === 0,
     errors,
@@ -104,4 +100,3 @@ export function delay(ms: number): Promise<void> {
 export function cn(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(" ");
 }
-

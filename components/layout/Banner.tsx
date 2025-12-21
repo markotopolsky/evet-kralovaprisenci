@@ -5,22 +5,11 @@ import { MapPin, Phone, X } from "lucide-react";
 import { Promo } from "@/lib/models/Promo";
 import { PromoModal } from "@/components/promo";
 import { siteConfig, getTodayOpeningHours } from "@/config/site";
-import { useLanguage } from "@/context/LanguageContext";
+import { text } from "@/lib/i18n/translations";
 
 const PROMO_SEEN_KEY = "promo_seen";
 
-const dayNamesDE: Record<string, string> = {
-  "Pondelok": "Montag",
-  "Utorok": "Dienstag",
-  "Streda": "Mittwoch",
-  "Štvrtok": "Donnerstag",
-  "Piatok": "Freitag",
-  "Sobota": "Samstag",
-  "Nedeľa": "Sonntag",
-};
-
 export function Banner() {
-  const { t, language } = useLanguage();
   const [promo, setPromo] = useState<Promo | null>(null);
   const [promoDismissed, setPromoDismissed] = useState(false);
   const [showPromoModal, setShowPromoModal] = useState(false);
@@ -45,20 +34,17 @@ export function Banner() {
           const data = await promoRes.json();
           console.log("Banner: Fetched promo:", data);
           
-          // Set promo if enabled and has text
-          if (data.enabled && data.barText) {
+          // Set promo if enabled and has text OR image
+          if (data.enabled && (data.barText || data.imageBase64)) {
             setPromo(data);
             
-            // Check if user has seen the promo (for modal auto-open)
-            const seen = localStorage.getItem(PROMO_SEEN_KEY);
-            console.log("Banner: Promo seen in localStorage:", seen);
-            
-            if (!seen) {
-              console.log("Banner: First visit - opening promo modal");
+            // Show modal automatically if promo has an image
+            if (data.imageBase64) {
+              console.log("Banner: Promo has image - opening promo modal");
               setShowPromoModal(true);
             }
           } else {
-            console.log("Banner: Promo not enabled or no barText", { enabled: data.enabled, barText: data.barText });
+            console.log("Banner: Promo not enabled or no content", { enabled: data.enabled, barText: data.barText, hasImage: !!data.imageBase64 });
           }
         } else {
           console.error("Banner: Failed to fetch promo, status:", promoRes.status);
@@ -91,9 +77,8 @@ export function Banner() {
     return () => clearInterval(interval);
   }, []);
 
-  // Handle closing the modal - save to localStorage
+  // Handle closing the modal
   function handleCloseModal() {
-    localStorage.setItem(PROMO_SEEN_KEY, "true");
     setShowPromoModal(false);
   }
 
@@ -155,7 +140,7 @@ export function Banner() {
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-500/30">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-300" />
-                    {t.infoBar.closed}
+                    {text.infoBar.closed}
                   </span>
                 </div>
               ) : todayInfo && (
@@ -169,7 +154,7 @@ export function Banner() {
                     }`}
                   >
                     <span className={`w-1.5 h-1.5 rounded-full ${todayInfo.isOpen ? "bg-green-300 animate-pulse" : "bg-red-300"}`} />
-                    {todayInfo.isOpen ? t.infoBar.open : t.infoBar.closed}
+                    {todayInfo.isOpen ? text.infoBar.open : text.infoBar.closed}
                   </span>
                   <span className="text-white/90 text-xs">
                     {todayInfo.hours}

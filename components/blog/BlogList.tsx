@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useLanguage } from "@/context/LanguageContext";
 import { calculateReadTime, formatDate, truncate } from "@/lib/utils";
+import { text } from "@/lib/i18n/translations";
+import { FileText } from "lucide-react";
 
 type BlogListItem = {
   _id: string;
@@ -12,6 +13,7 @@ type BlogListItem = {
   author: string;
   createdAt: string | Date;
   excerpt?: string;
+  imageBase64?: string | null;
 };
 
 interface BlogListProps {
@@ -19,17 +21,13 @@ interface BlogListProps {
 }
 
 export function BlogList({ posts }: BlogListProps) {
-  const { t, language } = useLanguage();
-
   if (!posts.length) {
     return (
       <div className="text-center py-12">
-        <span className="text-6xl block mb-4">📝</span>
-        <p className="text-[#5C5C5C]">
-          {language === "sk"
-            ? "Žiadne články zatiaľ nie sú k dispozícii."
-            : "Noch keine Artikel verfügbar."}
-        </p>
+        <div className="w-24 h-24 mx-auto mb-4 bg-primary-light rounded-full flex items-center justify-center">
+          <FileText className="w-12 h-12 text-primary/40" />
+        </div>
+        <p className="text-text-muted">Žiadne články zatiaľ nie sú k dispozícii.</p>
       </div>
     );
   }
@@ -46,29 +44,37 @@ export function BlogList({ posts }: BlogListProps) {
             href={`/blog/${post.slug}`}
             className="card-friendly overflow-hidden group"
           >
-            <div className="aspect-video bg-[#F2F7F5] flex items-center justify-center">
-              <span className="text-6xl">📄</span>
+            <div className="aspect-video bg-primary-light flex items-center justify-center overflow-hidden">
+              {post.imageBase64 ? (
+                <img
+                  src={`data:image/*;base64,${post.imageBase64}`}
+                  alt={post.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <FileText className="w-16 h-16 text-primary/40" />
+              )}
             </div>
             <div className="p-6">
-              <div className="flex items-center gap-4 text-sm text-[#5C5C5C] mb-3">
+              <div className="flex items-center gap-4 text-sm text-text-muted mb-3">
                 <time dateTime={new Date(post.createdAt).toISOString()}>
-                  {formatDate(post.createdAt, language)}
+                  {formatDate(post.createdAt)}
                 </time>
                 {readTime > 0 && (
                   <>
                     <span>•</span>
-                    <span>{readTime} {t.blog.minRead}</span>
+                    <span>
+                      {readTime} {text.blog.minRead}
+                    </span>
                   </>
                 )}
               </div>
-              <h2 className="font-semibold text-xl text-[#2A2A2A] mb-2 group-hover:text-[#3C8C80] transition-colors line-clamp-2">
+              <h2 className="font-semibold text-xl text-text mb-2 group-hover:text-primary transition-colors line-clamp-2">
                 {post.title}
               </h2>
-              <p className="text-sm text-[#5C5C5C] line-clamp-2">
-                {excerpt}
-              </p>
-              <span className="inline-flex items-center gap-1 text-[#3C8C80] font-medium text-sm mt-4">
-                {t.common.readMore} →
+              <p className="text-sm text-text-muted line-clamp-2">{excerpt}</p>
+              <span className="inline-flex items-center gap-1 text-primary font-medium text-sm mt-4">
+                {text.common.readMore} →
               </span>
             </div>
           </Link>
@@ -77,9 +83,3 @@ export function BlogList({ posts }: BlogListProps) {
     </div>
   );
 }
-
-
-
-
-
-

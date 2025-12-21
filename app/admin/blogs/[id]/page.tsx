@@ -1,16 +1,11 @@
 import { notFound } from "next/navigation";
 import { BlogForm } from "../BlogForm";
+import Link from "next/link";
 
 async function fetchBlog(id: string) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/admin/blogs/${id}`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    return null;
-  }
-
+  const res = await fetch(`${baseUrl}/api/admin/blogs/${id}`, { cache: "no-store" });
+  if (!res.ok) return null;
   return res.json();
 }
 
@@ -23,33 +18,38 @@ export default async function EditBlogPage({ params }: { params: Promise<{ id: s
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Upraviť blog
-          </h1>
-          <p className="text-gray-500 mb-6">
-            Aktualizujte obsah článku a uložte zmeny.
-          </p>
+    <div className="space-y-6">
+      <div className="flex items-center gap-2 text-sm text-[#5C5C5C]">
+        <Link href="/admin/blogs" className="hover:text-[#3C8C80]">Blogy</Link>
+        <span>→</span>
+        <span className="text-[#2A2A2A] truncate max-w-[200px]">{blog.title}</span>
+      </div>
 
-          <BlogForm
-            mode="edit"
-            blogId={id}
-            initialData={{
-              title: blog.title,
-              slug: blog.slug,
-              content: blog.content,
-              imageBase64: blog.imageBase64 ?? "",
-              author: blog.author,
-              published: blog.published ?? false,
-            }}
-          />
-        </div>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[#2A2A2A]">Upraviť blog</h1>
+        <Link
+          href={`/blog/${blog.slug}`}
+          target="_blank"
+          className="text-sm text-[#5C5C5C] hover:text-[#3C8C80]"
+        >
+          ↗ Náhľad
+        </Link>
+      </div>
+
+      <div className="card-friendly p-6">
+        <BlogForm
+          mode="edit"
+          blogId={id}
+          initialData={{
+            title: blog.title,
+            slug: blog.slug,
+            content: blog.content,
+            imageBase64: blog.imageBase64 ?? "",
+            author: blog.author,
+            published: blog.published ?? false,
+          }}
+        />
       </div>
     </div>
   );
 }
-
-
-

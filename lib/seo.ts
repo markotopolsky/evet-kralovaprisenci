@@ -54,10 +54,6 @@ export const defaultMetadata: Metadata = {
   },
   alternates: {
     canonical: baseUrl,
-    languages: {
-      "sk-SK": baseUrl,
-      "de-DE": `${baseUrl}/de`,
-    },
   },
   verification: {
     google: process.env.GOOGLE_SITE_VERIFICATION,
@@ -97,9 +93,7 @@ export function generatePageMetadata({
       description,
       images: [ogImage],
     },
-    robots: noIndex
-      ? { index: false, follow: false }
-      : { index: true, follow: true },
+    robots: noIndex ? { index: false, follow: false } : { index: true, follow: true },
   };
 }
 
@@ -155,11 +149,7 @@ export function generateLocalBusinessSchema() {
         closes: "20:00",
       },
     ],
-    sameAs: [
-      siteConfig.social.facebook,
-      siteConfig.social.instagram,
-      siteConfig.googleMaps.reviewsUrl,
-    ],
+    sameAs: [siteConfig.social.facebook, siteConfig.social.instagram, siteConfig.googleMaps.reviewsUrl],
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "4.9",
@@ -208,9 +198,7 @@ export function generateLocalBusinessSchema() {
   };
 }
 
-export function generateBreadcrumbSchema(
-  items: { name: string; url: string }[]
-) {
+export function generateBreadcrumbSchema(items: { name: string; url: string }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -268,9 +256,7 @@ export function generateArticleSchema({
   };
 }
 
-export function generateFAQSchema(
-  faqs: { question: string; answer: string }[]
-) {
+export function generateFAQSchema(faqs: { question: string; answer: string }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -337,9 +323,3 @@ export function generateWebsiteSchema() {
     },
   };
 }
-
-
-
-
-
-

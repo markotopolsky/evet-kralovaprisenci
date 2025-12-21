@@ -3,8 +3,10 @@ export type { Promotion } from "./Promotion";
 export type { AnimalType } from "./AnimalType";
 export type { AnimalArticle } from "./AnimalArticle";
 export type { Blog } from "./Blog";
+export type { Aktualita } from "./Aktualita";
 export type { Banner } from "./Banner";
 export type { ClinicStatus } from "./ClinicStatus";
+
 
 
 

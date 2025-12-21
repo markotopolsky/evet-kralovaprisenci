@@ -1,4 +1,5 @@
 export { Hero } from "./Hero";
+export { WhatWeDo } from "./WhatWeDo";
 export { WhyWeDoIt } from "./WhyWeDoIt";
 export { BasicInfoCards } from "./BasicInfoCards";
 export { ServicesPreview } from "./ServicesPreview";
@@ -7,6 +8,7 @@ export { TeamPreview } from "./TeamPreview";
 export { BlogPreview } from "./BlogPreview";
 export { PromotionsPreview } from "./PromotionsPreview";
 export { FAQ } from "./FAQ";
+
 
 
 

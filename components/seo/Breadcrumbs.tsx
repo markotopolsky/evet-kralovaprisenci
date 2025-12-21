@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useLanguage } from "@/context/LanguageContext";
+import { text } from "@/lib/i18n/translations";
 import { JsonLd } from "./JsonLd";
-import { generateBreadcrumbSchema, baseUrl } from "@/lib/seo";
+import { generateBreadcrumbSchema } from "@/lib/seo";
 
 interface BreadcrumbItem {
   name: string;
@@ -15,9 +15,7 @@ interface BreadcrumbsProps {
 }
 
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
-  const { t } = useLanguage();
-
-  const breadcrumbItems = [{ name: t.nav.home, href: "/" }, ...items];
+  const breadcrumbItems = [{ name: text.nav.home, href: "/" }, ...items];
 
   const schemaItems = breadcrumbItems.map((item) => ({
     name: item.name,
@@ -27,13 +25,10 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
   return (
     <>
       <JsonLd data={generateBreadcrumbSchema(schemaItems)} />
-      <nav
-        aria-label="Breadcrumb"
-        className="py-3 px-4 sm:px-6 lg:px-8 bg-[#F2F7F5]"
-      >
+      <nav aria-label="Breadcrumb" className="py-3 px-4 sm:px-6 lg:px-8 bg-primary-light">
         <div className="container-friendly">
           <ol
-            className="flex items-center gap-2 text-sm text-[#5C5C5C] flex-wrap"
+            className="flex items-center gap-2 text-sm text-text-muted flex-wrap"
             itemScope
             itemType="https://schema.org/BreadcrumbList"
           >
@@ -46,22 +41,18 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
                 itemType="https://schema.org/ListItem"
               >
                 {index > 0 && (
-                  <span className="text-[#E4E4E4]" aria-hidden="true">
+                  <span className="text-border" aria-hidden="true">
                     /
                   </span>
                 )}
                 {index === breadcrumbItems.length - 1 ? (
-                  <span
-                    className="text-[#2A2A2A] font-medium"
-                    itemProp="name"
-                    aria-current="page"
-                  >
+                  <span className="text-text font-medium" itemProp="name" aria-current="page">
                     {item.name}
                   </span>
                 ) : (
                   <Link
                     href={item.href}
-                    className="hover:text-[#3C8C80] transition-colors"
+                    className="hover:text-primary transition-colors"
                     itemProp="item"
                   >
                     <span itemProp="name">{item.name}</span>

@@ -1,6 +1,5 @@
 import { AnimalType } from "@/lib/models/AnimalType";
 import { AnimalArticle } from "@/lib/models/AnimalArticle";
-import { getPlaceholderImage } from "@/lib/images";
 
 const mockAnimalTypes: AnimalType[] = [
   {
@@ -9,7 +8,7 @@ const mockAnimalTypes: AnimalType[] = [
     slug: "psy",
     description: "Informácie o starostlivosti, zdraví a výžive psov všetkých plemien a vekových kategórií.",
     icon: "🐕",
-    image: getPlaceholderImage(600, 400, "Psy"),
+    image: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=600&h=400&fit=crop&q=80",
     order: 1,
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
@@ -20,7 +19,7 @@ const mockAnimalTypes: AnimalType[] = [
     slug: "macky",
     description: "Všetko o mačkách - od starostlivosti o mačiatka až po zdravie seniorných mačiek.",
     icon: "🐱",
-    image: getPlaceholderImage(600, 400, "Mačky"),
+    image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&h=400&fit=crop&q=80",
     order: 2,
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
@@ -31,7 +30,7 @@ const mockAnimalTypes: AnimalType[] = [
     slug: "hlodavce",
     description: "Starostlivosť o králiky, morčatá, škrečky a ďalšie drobné cicavce.",
     icon: "🐹",
-    image: getPlaceholderImage(600, 400, "Hlodavce"),
+    image: "https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=600&h=400&fit=crop&q=80",
     order: 3,
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
@@ -42,7 +41,7 @@ const mockAnimalTypes: AnimalType[] = [
     slug: "vtaky",
     description: "Informácie o starostlivosti o okrasné vtáky a papagáje.",
     icon: "🦜",
-    image: getPlaceholderImage(600, 400, "Vtáky"),
+    image: "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=600&h=400&fit=crop&q=80",
     order: 4,
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
@@ -74,7 +73,7 @@ Prechádzame na suché granule, kŕmime 3x denne.
 ## Odporúčané množstvo
 
 Množstvo krmiva závisí od veľkosti plemena a aktivity šteňaťa. Vždy sa riaďte odporúčaním na obale krmiva a konzultujte s veterinárom.`,
-    image: getPlaceholderImage(800, 500, "Kŕmenie šteňaťa"),
+    image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800&h=500&fit=crop&q=80",
     author: "MVDr. Jana Nováková",
     tags: ["výživa", "šteňa", "starostlivosť"],
     published: true,
@@ -106,7 +105,7 @@ Očkovanie chráni vášho psa pred nebezpečnými infekčnými chorobami.
 | 10-12 týždňov | Druhá dávka |
 | 14-16 týždňov | Tretia dávka + besnota |
 | Ročne | Preočkovanie |`,
-    image: getPlaceholderImage(800, 500, "Vakcinácia psa"),
+    image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&h=500&fit=crop&q=80",
     author: "MVDr. Peter Svoboda",
     tags: ["vakcinácia", "prevencia", "zdravie"],
     published: true,
@@ -140,7 +139,7 @@ Vyžaduje denné česanie pre prevenciu zacuchania.
 ## Kedy navštíviť veterinára
 
 Ak zaznamenáte nadmerné vypadávanie srsti, lysiny alebo zmenu kvality srsti, navštívte veterinára.`,
-    image: getPlaceholderImage(800, 500, "Starostlivosť o srsť mačky"),
+    image: "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800&h=500&fit=crop&q=80",
     author: "MVDr. Jana Nováková",
     tags: ["starostlivosť", "srsť", "mačka"],
     published: true,
@@ -176,7 +175,7 @@ Pravidelné kontroly u veterinára a sledovanie:
 - Hmotnosti
 - Stavu zubov
 - Kvality srsti`,
-    image: getPlaceholderImage(800, 500, "Starostlivosť o morča"),
+    image: "https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=800&h=500&fit=crop&q=80",
     author: "MVDr. Peter Svoboda",
     tags: ["morča", "hlodavce", "starostlivosť"],
     published: true,
@@ -279,6 +278,7 @@ export async function getAdjacentArticles(
 
   return { prev, next };
 }
+
 
 
 

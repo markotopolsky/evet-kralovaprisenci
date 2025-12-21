@@ -1,103 +1,126 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { formatDate } from "@/lib/utils";
 
-async function fetchBlogs() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/admin/blogs`, { cache: "no-store" });
-  if (!res.ok) {
-    return [];
-  }
-  return res.json();
+interface BlogItem {
+  _id: string;
+  title: string;
+  slug: string;
+  author: string;
+  createdAt: string;
+  published: boolean;
 }
 
-export default async function AdminBlogsPage() {
-  const blogs = await fetchBlogs();
+export default function AdminBlogsPage() {
+  const [blogs, setBlogs] = useState<BlogItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/admin/blogs", { cache: "no-store" })
+      .then((res) => res.json())
+      .then(setBlogs)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function handleDelete(id: string, title: string) {
+    if (!confirm(`Odstrániť "${title}"?`)) return;
+    try {
+      const res = await fetch(`/api/admin/blogs/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setBlogs(blogs.filter((b) => b._id !== id));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function togglePublish(id: string, published: boolean) {
+    try {
+      const res = await fetch(`/api/admin/blogs/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ published: !published }),
+      });
+      if (res.ok) {
+        setBlogs(blogs.map((b) => (b._id === id ? { ...b, published: !published } : b)));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  if (loading) {
+    return <p className="text-[#5C5C5C]">Načítavam...</p>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Blogy</h1>
-            <p className="text-gray-500">Spravujte články na blogu.</p>
-          </div>
-          <Link
-            href="/admin/blogs/create"
-            className="px-4 py-2 bg-[#3C8C80] text-white font-medium rounded-lg hover:bg-[#2d6b62] transition-colors"
-          >
-            Vytvoriť nový blog
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-[#2A2A2A]">Blogy</h1>
+        <Link href="/admin/blogs/create" className="btn-primary">
+          + Nový blog
+        </Link>
+      </div>
+
+      {blogs.length === 0 ? (
+        <div className="card-friendly p-8 text-center">
+          <p className="text-[#5C5C5C] mb-4">Zatiaľ žiadne blogy.</p>
+          <Link href="/admin/blogs/create" className="btn-primary">
+            Vytvoriť prvý blog
           </Link>
         </div>
-
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Názov
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Autor
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Vytvorené
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Publikované
-                  </th>
-                  <th className="px-6 py-3" />
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {blogs.map((blog: any) => (
-                  <tr key={blog._id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {blog.title}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {blog.author}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {blog.createdAt ? formatDate(blog.createdAt) : "-"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          blog.published
-                            ? "bg-green-50 text-green-700 border border-green-200"
-                            : "bg-gray-50 text-gray-600 border border-gray-200"
-                        }`}
-                      >
-                        {blog.published ? "Áno" : "Nie"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Link
-                        href={`/admin/blogs/${blog._id}`}
-                        className="text-[#3C8C80] hover:text-[#2d6b62]"
-                      >
-                        Upraviť
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-
-                {blogs.length === 0 && (
-                  <tr>
-                    <td className="px-6 py-6 text-center text-gray-500" colSpan={5}>
-                      Žiadne blogy zatiaľ nie sú.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+      ) : (
+        <div className="space-y-3">
+          {blogs.map((blog) => (
+            <div key={blog._id} className="card-friendly p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-medium text-[#2A2A2A] truncate">{blog.title}</h3>
+                    <span
+                      onClick={() => togglePublish(blog._id, blog.published)}
+                      className={`px-2 py-0.5 text-xs rounded-full cursor-pointer ${
+                        blog.published
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      {blog.published ? "Publikovaný" : "Koncept"}
+                    </span>
+                  </div>
+                  <p className="text-sm text-[#5C5C5C]">
+                    {blog.author} • {blog.createdAt ? formatDate(blog.createdAt) : "-"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Link
+                    href={`/blog/${blog.slug}`}
+                    target="_blank"
+                    className="text-[#5C5C5C] hover:text-[#3C8C80]"
+                  >
+                    ↗
+                  </Link>
+                  <Link
+                    href={`/admin/blogs/${blog._id}`}
+                    className="text-[#3C8C80] hover:underline"
+                  >
+                    Upraviť
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(blog._id, blog.title)}
+                    className="text-red-600 hover:underline"
+                  >
+                    Zmazať
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }
-
-
-

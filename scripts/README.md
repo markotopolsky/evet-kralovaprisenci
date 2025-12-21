@@ -120,3 +120,4 @@ CF_API_KEY="${CF_API_KEY}"
 - **Permission denied:** Make sure the script is executable and log directory is writable
 
 
+

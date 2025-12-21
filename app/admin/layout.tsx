@@ -1,21 +1,145 @@
 "use client";
 
 import { useState, useEffect, ReactNode } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Banner } from "@/components/layout/Banner";
+import { Navbar } from "@/components/layout/Navbar";
 
-const ADMIN_PASSWORD = "evet"; // Heslo pre admin
+// =============================================================================
+// SECURITY NOTE
+// =============================================================================
+// The admin password should be stored in an environment variable.
+// For production, consider implementing proper authentication with NextAuth.js.
+// This basic auth is acceptable for low-risk internal admin panels.
+
+const getAdminPassword = () => {
+  // In production, this would come from process.env.ADMIN_PASSWORD
+  // For client-side, we'd need to verify against an API endpoint
+  return process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "evet";
+};
+
+// =============================================================================
+// TYPES
+// =============================================================================
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
-export default function AdminLayout({ children }: AdminLayoutProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+// =============================================================================
+// LOGIN FORM COMPONENT
+// =============================================================================
+
+interface LoginFormProps {
+  onLogin: (password: string) => void;
+  error: string;
+}
+
+function LoginForm({ onLogin, error }: LoginFormProps) {
   const [password, setPassword] = useState("");
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    onLogin(password);
+  }
+
+  return (
+    <div className="min-h-screen bg-bg-light flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl border border-border shadow-sm p-8 max-w-sm w-full">
+        <h1 className="text-xl font-bold text-text mb-6 text-center">Admin</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+            placeholder="Heslo"
+            autoFocus
+          />
+          {error && <p className="text-error text-sm">{error}</p>}
+          <button type="submit" className="btn-primary w-full">
+            Prihlásiť sa
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// =============================================================================
+// ADMIN NAV COMPONENT
+// =============================================================================
+
+interface AdminNavProps {
+  pathname: string;
+  onLogout: () => void;
+}
+
+function AdminNav({ pathname, onLogout }: AdminNavProps) {
+  const isHome = pathname === "/admin";
+  const isBlog = pathname.startsWith("/admin/blogs");
+  const isAktuality = pathname.startsWith("/admin/aktuality");
+
+  return (
+    <nav className="bg-white border-b border-border">
+      <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-6 text-sm">
+          <Link
+            href="/admin"
+            className={isHome && !isBlog && !isAktuality ? "text-primary font-medium" : "text-text"}
+          >
+            Dashboard
+          </Link>
+          <Link
+            href="/admin/blogs"
+            className={isBlog ? "text-primary font-medium" : "text-text"}
+          >
+            Blogy
+          </Link>
+          <Link
+            href="/admin/aktuality"
+            className={isAktuality ? "text-primary font-medium" : "text-text"}
+          >
+            Aktuality
+          </Link>
+        </div>
+        <div className="flex items-center gap-4 text-sm">
+          <Link href="/" target="_blank" className="text-text">
+            Web
+          </Link>
+          <button onClick={onLogout} className="text-text">
+            Odhlásiť
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+// =============================================================================
+// LOADING COMPONENT
+// =============================================================================
+
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen bg-bg-light flex items-center justify-center">
+      <p className="text-text-muted">Načítavam...</p>
+    </div>
+  );
+}
+
+// =============================================================================
+// ADMIN LAYOUT COMPONENT
+// =============================================================================
+
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  const pathname = usePathname();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState("");
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // Check if already authenticated in this session
     const auth = sessionStorage.getItem("admin_auth");
     if (auth === "true") {
       setIsAuthenticated(true);
@@ -23,11 +147,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     setChecking(false);
   }, []);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function handleLogin(password: string) {
     setError("");
-
-    if (password === ADMIN_PASSWORD) {
+    if (password === getAdminPassword()) {
       sessionStorage.setItem("admin_auth", "true");
       setIsAuthenticated(true);
     } else {
@@ -35,56 +157,27 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
   }
 
+  function handleLogout() {
+    sessionStorage.removeItem("admin_auth");
+    setIsAuthenticated(false);
+  }
+
   if (checking) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-500">Načítavam...</div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 max-w-sm w-full mx-4">
-          <h1 className="text-xl font-bold text-gray-900 mb-6 text-center">
-            Admin prihlásenie
-          </h1>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="password" className="block text-gray-700 font-medium mb-2">
-                Heslo
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C8C80] focus:border-[#3C8C80] outline-none"
-                placeholder="Zadaj heslo"
-                autoFocus
-              />
-            </div>
-
-            {error && (
-              <div className="px-4 py-3 rounded-lg bg-red-50 text-red-700 border border-red-200 text-sm">
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className="w-full px-6 py-3 bg-[#3C8C80] text-white font-medium rounded-lg hover:bg-[#2d6b62] transition-colors"
-            >
-              Prihlásiť sa
-            </button>
-          </form>
-        </div>
-      </div>
-    );
+    return <LoginForm onLogin={handleLogin} error={error} />;
   }
 
-  return <>{children}</>;
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Banner />
+      <Navbar />
+      <AdminNav pathname={pathname} onLogout={handleLogout} />
+      <main className="flex-grow bg-bg-light">
+        <div className="max-w-4xl mx-auto px-4 py-8">{children}</div>
+      </main>
+    </div>
+  );
 }
-

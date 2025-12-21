@@ -3,58 +3,28 @@
 import Link from "next/link";
 import { Clock3, MapPin, Phone, CalendarClock } from "lucide-react";
 import { siteConfig } from "@/config/site";
-import { useLanguage } from "@/context/LanguageContext";
+import { text } from "@/lib/i18n/translations";
+import { OpeningHours } from "@/components/shared";
 
 export function BasicInfoCards() {
-  const { t } = useLanguage();
-
   return (
     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* Opening Hours Card */}
       <div className="card-friendly p-6">
         <div className="text-center">
-          <Clock3 className="w-10 h-10 mx-auto mb-4 text-[#3C8C80]" aria-hidden />
-          <h3 className="font-semibold text-lg text-[#2A2A2A] mb-4">
-            {t.cards.openingHours}
-          </h3>
-          <div className="space-y-2 text-sm">
-            <div className="bg-[#F2F7F5] p-3 rounded-lg">
-              <span className="block font-medium text-[#3C8C80] uppercase text-xs mb-1">
-                {t.hours.monWed}
-              </span>
-              <span className="text-[#2A2A2A]">9:00 - 17:00</span>
-            </div>
-            <div className="bg-[#F2F7F5] p-3 rounded-lg">
-              <span className="block font-medium text-[#3C8C80] uppercase text-xs mb-1">
-                {t.hours.tueThuFri}
-              </span>
-              <span className="text-[#2A2A2A]">13:00 - 20:00</span>
-            </div>
-            <div className="bg-[#F2F7F5] p-3 rounded-lg">
-              <span className="block font-medium text-[#3C8C80] uppercase text-xs mb-1">
-                {t.hours.saturday}
-              </span>
-              <span className="text-[#2A2A2A]">11:00 - 15:00</span>
-            </div>
-            <div className="bg-[#F2F7F5] p-3 rounded-lg">
-              <span className="block font-medium text-[#3C8C80] uppercase text-xs mb-1">
-                {t.hours.sunday}
-              </span>
-              <span className="text-[#2A2A2A]">18:00 - 20:00</span>
-            </div>
-          </div>
+          <Clock3 className="w-10 h-10 mx-auto mb-4 text-primary" aria-hidden />
+          <h3 className="font-semibold text-lg text-text mb-4">{text.cards.openingHours}</h3>
+          <OpeningHours variant="grid" />
         </div>
       </div>
 
       {/* Location Card */}
       <div className="card-friendly p-6">
         <div className="text-center">
-          <MapPin className="w-10 h-10 mx-auto mb-4 text-[#3C8C80]" aria-hidden />
-          <h3 className="font-semibold text-lg text-[#2A2A2A] mb-4">
-            {t.cards.findUs}
-          </h3>
-          <address className="not-italic text-sm text-[#5C5C5C] mb-4">
-            <p className="font-medium text-[#2A2A2A]">{siteConfig.address.street}</p>
+          <MapPin className="w-10 h-10 mx-auto mb-4 text-primary" aria-hidden />
+          <h3 className="font-semibold text-lg text-text mb-4">{text.cards.findUs}</h3>
+          <address className="not-italic text-sm text-text-muted mb-4">
+            <p className="font-medium text-text">{siteConfig.address.street}</p>
             <p>{siteConfig.address.city}</p>
             <p>{siteConfig.address.country}</p>
           </address>
@@ -62,9 +32,9 @@ export function BasicInfoCards() {
             href={siteConfig.googleMaps.reviewsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-[#3C8C80] font-medium hover:underline"
+            className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
           >
-            {t.cards.showOnMap} →
+            {text.cards.showOnMap} →
           </a>
         </div>
       </div>
@@ -72,20 +42,18 @@ export function BasicInfoCards() {
       {/* Contact Card */}
       <div className="card-friendly p-6">
         <div className="text-center">
-          <Phone className="w-10 h-10 mx-auto mb-4 text-[#3C8C80]" aria-hidden />
-          <h3 className="font-semibold text-lg text-[#2A2A2A] mb-4">
-            {t.cards.contact}
-          </h3>
+          <Phone className="w-10 h-10 mx-auto mb-4 text-primary" aria-hidden />
+          <h3 className="font-semibold text-lg text-text mb-4">{text.cards.contact}</h3>
           <div className="space-y-3">
             <a
               href={`tel:${siteConfig.phone}`}
-              className="block text-xl font-bold text-[#3C8C80] hover:underline"
+              className="block text-xl font-bold text-primary hover:underline"
             >
               {siteConfig.phone}
             </a>
             <a
               href={`mailto:${siteConfig.email}`}
-              className="block text-sm text-[#5C5C5C] hover:text-[#3C8C80]"
+              className="block text-sm text-text-muted hover:text-primary"
             >
               {siteConfig.email}
             </a>
@@ -94,29 +62,21 @@ export function BasicInfoCards() {
       </div>
 
       {/* Online Booking Card */}
-      <div className="card-friendly p-6 bg-[#F2F7F5]">
+      <div className="card-friendly p-6 bg-primary-light">
         <div className="text-center">
-          <CalendarClock className="w-10 h-10 mx-auto mb-4 text-[#3C8C80]" aria-hidden />
-          <h3 className="font-semibold text-lg text-[#2A2A2A] mb-4">
-            {t.cards.onlineBooking}
-          </h3>
-          <p className="text-sm text-[#5C5C5C] mb-6">
-            {t.cards.bookComfortably}
-          </p>
+          <CalendarClock className="w-10 h-10 mx-auto mb-4 text-primary" aria-hidden />
+          <h3 className="font-semibold text-lg text-text mb-4">{text.cards.onlineBooking}</h3>
+          <p className="text-sm text-text-muted mb-6">{text.cards.bookComfortably}</p>
           <Link
             href={siteConfig.bookingUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-[#3C8C80] font-medium hover:underline"
+            className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
           >
-            {t.nav.book}
+            {text.nav.book}
           </Link>
         </div>
       </div>
     </div>
   );
 }
-
-
-
-

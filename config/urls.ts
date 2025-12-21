@@ -9,12 +9,15 @@ export const urls = {
   animalType: (slug: string) => `/vase-zvieratko/${slug}`,
   animalArticle: (typeSlug: string, articleSlug: string) =>
     `/vase-zvieratko/${typeSlug}/${articleSlug}`,
+  aktuality: "/vase-zvieratko/aktuality",
+  aktualitaPost: (slug: string) => `/vase-zvieratko/aktuality/${slug}`,
   blog: "/blog",
   blogPost: (slug: string) => `/blog/${slug}`,
   promotions: "/akcie",
   contact: "/kontakt",
   pricing: "/cennik",
 } as const;
+
 
 
 

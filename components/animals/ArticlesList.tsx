@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { AnimalArticle } from "@/lib/models/AnimalArticle";
-import { useLanguage } from "@/context/LanguageContext";
 import { formatDate } from "@/lib/utils";
+import { text } from "@/lib/i18n/translations";
+import { FileText } from "lucide-react";
 
 interface ArticlesListProps {
   articles: AnimalArticle[];
@@ -11,17 +13,13 @@ interface ArticlesListProps {
 }
 
 export function ArticlesList({ articles, animalSlug }: ArticlesListProps) {
-  const { t, language } = useLanguage();
-
   if (!articles.length) {
     return (
       <div className="text-center py-12">
-        <span className="text-6xl block mb-4">📝</span>
-        <p className="text-[#5C5C5C]">
-          {language === "sk"
-            ? "Žiadne články zatiaľ nie sú k dispozícii."
-            : "Noch keine Artikel verfügbar."}
-        </p>
+        <div className="w-24 h-24 mx-auto mb-4 bg-primary-light rounded-full flex items-center justify-center">
+          <FileText className="w-12 h-12 text-primary/40" />
+        </div>
+        <p className="text-text-muted">Žiadne články zatiaľ nie sú k dispozícii.</p>
       </div>
     );
   }
@@ -34,24 +32,33 @@ export function ArticlesList({ articles, animalSlug }: ArticlesListProps) {
           href={`/vase-zvieratko/${animalSlug}/${article.slug}`}
           className="card-friendly overflow-hidden group"
         >
-          <div className="aspect-video bg-[#F2F7F5] flex items-center justify-center">
-            <span className="text-6xl">📄</span>
+          <div className="aspect-video bg-primary-light relative overflow-hidden">
+            {article.image ? (
+              <Image
+                src={article.image}
+                alt={article.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <FileText className="w-16 h-16 text-primary/40" />
+              </div>
+            )}
           </div>
           <div className="p-6">
             <time
               dateTime={new Date(article.createdAt).toISOString()}
-              className="text-sm text-[#5C5C5C] block mb-2"
+              className="text-sm text-text-muted block mb-2"
             >
-              {formatDate(article.createdAt, language)}
+              {formatDate(article.createdAt)}
             </time>
-            <h3 className="font-semibold text-lg text-[#2A2A2A] mb-2 group-hover:text-[#3C8C80] transition-colors line-clamp-2">
+            <h3 className="font-semibold text-lg text-text mb-2 group-hover:text-primary transition-colors line-clamp-2">
               {article.title}
             </h3>
-            <p className="text-sm text-[#5C5C5C] line-clamp-2">
-              {article.excerpt}
-            </p>
-            <span className="inline-flex items-center gap-1 text-[#3C8C80] font-medium text-sm mt-4">
-              {t.common.readMore} →
+            <p className="text-sm text-text-muted line-clamp-2">{article.excerpt}</p>
+            <span className="inline-flex items-center gap-1 text-primary font-medium text-sm mt-4">
+              {text.common.readMore} →
             </span>
           </div>
         </Link>
@@ -59,9 +66,3 @@ export function ArticlesList({ articles, animalSlug }: ArticlesListProps) {
     </div>
   );
 }
-
-
-
-
-
-

@@ -1,19 +1,83 @@
 @import "tailwindcss";
 
 @theme {
+  /* ==========================================================================
+     COLOR TOKENS
+     Keep in sync with lib/design-tokens.ts
+     ========================================================================== */
+  
   /* Primary Colors */
   --color-primary: #3C8C80;
   --color-primary-dark: #2d6b62;
+  --color-primary-light: #F2F7F5;
+  --color-primary-muted: rgba(60, 140, 128, 0.1);
+  --color-primary-hover: rgba(60, 140, 128, 0.05);
+  
+  /* Accent Colors */
+  --color-accent: #E6B84C;
+  --color-accent-dark: #d4a43d;
+  --color-accent-light: rgba(230, 184, 76, 0.2);
   
   /* Text Colors */
   --color-text: #2A2A2A;
   --color-text-muted: #5C5C5C;
+  --color-text-light: #6b6b6b;
+  --color-text-inverted: #ffffff;
   
   /* Background Colors */
+  --color-bg: #ffffff;
   --color-bg-light: #f8f8f6;
-  --color-border: #e8e6e1;
+  --color-bg-card: #ffffff;
+  --color-bg-dark: #2d2d2d;
   
-  /* Animations */
+  /* Border Colors */
+  --color-border: #e8e6e1;
+  --color-border-light: #E4E4E4;
+  
+  /* Status Colors */
+  --color-success: #22c55e;
+  --color-success-light: #86efac;
+  --color-error: #ef4444;
+  --color-error-light: rgba(239, 68, 68, 0.3);
+  
+  /* ==========================================================================
+     SPACING TOKENS
+     ========================================================================== */
+  
+  --spacing-section-sm: 3rem;
+  --spacing-section: 4rem;
+  --spacing-section-lg: 5rem;
+  
+  /* ==========================================================================
+     LAYOUT TOKENS
+     ========================================================================== */
+  
+  --max-width-container: 80rem;
+  --max-width-content: 48rem;
+  --max-width-narrow: 42rem;
+  --nav-height: 72px;
+  
+  /* ==========================================================================
+     SHADOWS
+     ========================================================================== */
+  
+  --shadow-gentle: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-default: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+  /* ==========================================================================
+     TRANSITIONS
+     ========================================================================== */
+  
+  --transition-fast: 150ms ease;
+  --transition-default: 200ms ease;
+  --transition-slow: 300ms ease;
+  
+  /* ==========================================================================
+     ANIMATIONS
+     ========================================================================== */
+  
   --animate-fade-in: fadeIn 0.3s ease-out;
   --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   
@@ -28,7 +92,10 @@
   }
 }
 
-/* Critical base styles */
+/* =============================================================================
+   BASE STYLES
+   ============================================================================= */
+
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -37,26 +104,26 @@ html {
 
 body {
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
-  color: #2A2A2A;
-  background-color: #fff;
+  color: var(--color-text);
+  background-color: var(--color-bg);
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-nunito), system-ui, sans-serif;
   font-weight: 700;
-  color: #2A2A2A;
+  color: var(--color-text);
 }
 
 /* Links */
 a {
-  transition: color 0.15s ease;
+  transition: color var(--transition-fast);
 }
 
 /* Selection */
 ::selection {
-  background-color: #3C8C80;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverted);
 }
 
 /* Images - prevent layout shift */
@@ -66,9 +133,12 @@ img {
   display: block;
 }
 
-/* Utility classes */
+/* =============================================================================
+   LAYOUT UTILITIES
+   ============================================================================= */
+
 .container-friendly {
-  max-width: 80rem;
+  max-width: var(--max-width-container);
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
@@ -90,48 +160,52 @@ img {
 }
 
 .section-padding {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
+  padding-top: var(--spacing-section);
+  padding-bottom: var(--spacing-section);
 }
 
 @media (min-width: 640px) {
   .section-padding {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
+    padding-top: var(--spacing-section-lg);
+    padding-bottom: var(--spacing-section-lg);
   }
 }
 
-/* Card styles */
+/* =============================================================================
+   COMPONENT STYLES
+   ============================================================================= */
+
+/* Card Styles */
 .card-friendly {
-  background-color: white;
+  background-color: var(--color-bg-card);
   border-radius: 0.75rem;
-  border: 1px solid #e8e6e1;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-gentle);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .card-friendly:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-default);
   transform: translateY(-2px);
 }
 
-/* Button styles */
+/* Button Styles */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background-color: #3C8C80;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverted);
   border-radius: 0.5rem;
   font-weight: 600;
   font-size: 1rem;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--transition-fast);
 }
 
 .btn-primary:hover {
-  background-color: #2d6b62;
+  background-color: var(--color-primary-dark);
 }
 
 .btn-secondary {
@@ -140,37 +214,58 @@ img {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  border: 2px solid #3C8C80;
-  color: #3C8C80;
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
   border-radius: 0.5rem;
   font-weight: 600;
   font-size: 1rem;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--transition-fast);
 }
 
 .btn-secondary:hover {
-  background-color: rgba(60, 140, 128, 0.05);
+  background-color: var(--color-primary-hover);
 }
 
-/* Badge */
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-accent);
+  color: var(--color-text);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color var(--transition-fast);
+}
+
+.btn-accent:hover {
+  background-color: var(--color-accent-dark);
+}
+
+/* Badge Styles */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background-color: #f8f8f6;
+  background-color: var(--color-bg-light);
   border-radius: 9999px;
-  color: #3C8C80;
+  color: var(--color-primary);
   font-weight: 500;
   font-size: 0.875rem;
 }
 
 /* Shadow utilities */
 .shadow-gentle {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-gentle);
 }
 
-/* Animation utilities */
+/* =============================================================================
+   ANIMATION UTILITIES
+   ============================================================================= */
+
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -179,9 +274,13 @@ img {
   animation: fadeIn 0.3s ease-out;
 }
 
+/* =============================================================================
+   ACCESSIBILITY
+   ============================================================================= */
+
 /* Focus styles for accessibility */
 :focus-visible {
-  outline: 2px solid #3C8C80;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 

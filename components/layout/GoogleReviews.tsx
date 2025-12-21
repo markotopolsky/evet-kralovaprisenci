@@ -2,64 +2,44 @@
 
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
-import { useLanguage } from "@/context/LanguageContext";
+import { text } from "@/lib/i18n/translations";
+import { Star } from "lucide-react";
 
 interface Review {
   author: string;
   rating: number;
-  text: { sk: string; de: string };
-  date: { sk: string; de: string };
+  text: string;
+  date: string;
 }
 
 const mockReviews: Review[] = [
   {
-    author: "Mária K.",
+    author: "Lucia Bičárová",
     rating: 5,
-    text: {
-      sk: "Vynikajúca starostlivosť o nášho psíka. Personál je veľmi príjemný a profesionálny. Určite odporúčam!",
-      de: "Hervorragende Betreuung unseres Hundes. Das Personal ist sehr freundlich und professionell. Sehr zu empfehlen!",
-    },
-    date: { sk: "pred 2 týždňami", de: "vor 2 Wochen" },
+    text: "Pani doktorka je velmi príjemná a zachránila nám naše mačiatka aj mačaciu maminu. Nemala problém poradiť nezištne cez telefon mimo ordinačných hodín. Perfektné otváracie hodiny a skvelý ľudský prístup. Srdečne ďakujeme.",
+    date: "pred 2 týždňami",
   },
   {
-    author: "Peter S.",
+    author: "Alena Puškelová",
     rating: 5,
-    text: {
-      sk: "Najlepšia veterinárna klinika v okolí. Vždy sa o naše mačky postarajú s láskou.",
-      de: "Die beste Tierklinik in der Gegend. Unsere Katzen werden immer mit Liebe versorgt.",
-    },
-    date: { sk: "pred mesiacom", de: "vor einem Monat" },
+    text: "Ak niekto zdvihne neznáme číslo v sobotu o 1.30 v noci je ľudský, ak bez podmienok vyšetrí akútne choré neznáme zviera je milovník zvierat, ak ide do operácie s prognózou 50/50 je profesionál. Naša doginka už beží za dúhovým mostom. Napriek tomu Vám p.doktorka a p.sestrička vyslovujeme veľké ĎAKUJEM. Pre nás ste naj.....",
+    date: "pred mesiacom",
   },
   {
-    author: "Jana M.",
+    author: "Anna Targosova",
     rating: 5,
-    text: {
-      sk: "Profesionálny prístup, moderné vybavenie. Som veľmi spokojná so službami.",
-      de: "Professioneller Ansatz, moderne Ausstattung. Ich bin sehr zufrieden mit den Dienstleistungen.",
-    },
-    date: { sk: "pred 2 mesiacmi", de: "vor 2 Monaten" },
+    text: "25.6. Som z mojou malou nezbedničkou Lili bola na pohotovosti u pani doktorky. Vďaka za krásny prístup aj ošetrenie. Ráno sa prebudila akoby jej nikdy nič nebolo.",
+    date: "pred 3 týždňami",
   },
 ];
 
-export function GoogleReviews({
-  reviews = mockReviews,
-  overallRating = 4.9,
-  totalReviews = 127,
-}: {
-  reviews?: Review[];
-  overallRating?: number;
-  totalReviews?: number;
-}) {
-  const { t, language } = useLanguage();
-
-  const renderStars = (rating: number) => (
+function renderStars(rating: number) {
+  return (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (
         <svg
           key={star}
-          className={`w-5 h-5 ${
-            star <= rating ? "text-[#E6B84C]" : "text-[#E4E4E4]"
-          }`}
+          className={`w-5 h-5 ${star <= rating ? "text-accent" : "text-border"}`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -68,52 +48,54 @@ export function GoogleReviews({
       ))}
     </div>
   );
+}
 
+export function GoogleReviews({
+  reviews = mockReviews,
+  overallRating = 4.8,
+  totalReviews = 57,
+}: {
+  reviews?: Review[];
+  overallRating?: number;
+  totalReviews?: number;
+}) {
   return (
-    <section className="section-padding bg-[#F2F7F5]" aria-labelledby="reviews-heading">
+    <section className="section-padding bg-primary-light" aria-labelledby="reviews-heading">
       <div className="container-friendly">
         <div className="text-center mb-12">
-          <span className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-[#3C8C80] font-medium mb-4">
-            <span>⭐</span>
-            {t.reviews.badge}
+          <span className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-primary font-medium mb-4">
+            <Star className="w-4 h-4 fill-accent text-accent" />
+            {text.reviews.badge}
           </span>
-          <h2
-            id="reviews-heading"
-            className="text-3xl sm:text-4xl font-bold text-[#2A2A2A] mb-4"
-          >
-            {t.reviews.title}
+          <h2 id="reviews-heading" className="text-3xl sm:text-4xl font-bold text-text mb-4">
+            {text.reviews.title}
           </h2>
           <div className="flex items-center justify-center gap-4">
             <div className="flex items-center gap-2">
               {renderStars(Math.round(overallRating))}
-              <span className="text-2xl font-bold text-[#2A2A2A]">
-                {overallRating}
-              </span>
+              <span className="text-2xl font-bold text-text">{overallRating}</span>
             </div>
-            <span className="text-[#5C5C5C]">
-              {t.reviews.basedOn} {totalReviews} {t.reviews.reviewsCount}
+            <span className="text-text-muted">
+              {text.reviews.basedOn} {totalReviews} {text.reviews.reviewsCount}
             </span>
           </div>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {reviews.map((review, index) => (
-            <div
-              key={index}
-              className="card-friendly p-6"
-            >
+            <div key={index} className="card-friendly p-6">
               <div className="flex items-start gap-3 mb-3">
-                <div className="w-10 h-10 bg-[#3C8C80] rounded-full flex items-center justify-center text-white font-semibold">
+                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
                   {review.author.charAt(0)}
                 </div>
                 <div>
-                  <p className="font-semibold text-[#2A2A2A]">{review.author}</p>
-                  <p className="text-xs text-[#5C5C5C]">{review.date[language]}</p>
+                  <p className="font-semibold text-text">{review.author}</p>
+                  <p className="text-xs text-text-muted">{review.date}</p>
                 </div>
               </div>
               {renderStars(review.rating)}
-              <p className="mt-3 text-[#5C5C5C] text-sm leading-relaxed">
-                &ldquo;{review.text[language]}&rdquo;
+              <p className="mt-3 text-text-muted text-sm leading-relaxed">
+                &ldquo;{review.text}&rdquo;
               </p>
             </div>
           ))}
@@ -124,7 +106,7 @@ export function GoogleReviews({
             href={siteConfig.googleMaps.reviewsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-[#E4E4E4] rounded-xl hover:border-[#3C8C80] transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-border rounded-xl hover:border-primary transition-colors"
           >
             <svg className="w-6 h-6" viewBox="0 0 24 24">
               <path
@@ -144,9 +126,7 @@ export function GoogleReviews({
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            <span className="font-medium text-[#2A2A2A]">
-              {t.reviews.viewAllGoogle}
-            </span>
+            <span className="font-medium text-text">{text.reviews.viewAllGoogle}</span>
           </Link>
         </div>
       </div>

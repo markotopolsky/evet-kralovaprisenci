@@ -163,15 +163,30 @@ export async function deleteBlog(id: string): Promise<boolean> {
 
 // Public blog page helpers - return only published blogs
 export async function getAllBlogPosts(): Promise<BlogDto[]> {
-  return getPublishedBlogs();
+  try {
+    return await getPublishedBlogs();
+  } catch (error) {
+    console.error("Error fetching all blog posts:", error);
+    return []; // Return empty array on error
+  }
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogDto | null> {
-  return getBlogBySlug(slug, true);
+  try {
+    return await getBlogBySlug(slug, true);
+  } catch (error) {
+    console.error("Error fetching blog post by slug:", error);
+    return null;
+  }
 }
 
 export async function getRecentBlogPosts(limit: number): Promise<BlogDto[]> {
-  return getPublishedBlogs(limit);
+  try {
+    return await getPublishedBlogs(limit);
+  } catch (error) {
+    console.error("Error fetching recent blog posts:", error);
+    return []; // Return empty array on error to prevent page crash
+  }
 }
 
 export type AdjacentBlogs = {
@@ -201,5 +216,6 @@ export async function getAdjacentBlogPosts(currentSlug: string): Promise<Adjacen
 }
 
 export { SlugConflictError };
+
 
 

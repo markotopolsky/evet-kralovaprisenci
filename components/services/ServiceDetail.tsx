@@ -16,6 +16,8 @@ import {
   Ambulance, 
   ShoppingBag, 
   MessageCircle,
+  Calendar,
+  Phone,
   LucideIcon
 } from "lucide-react";
 
@@ -101,15 +103,17 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
           href={siteConfig.bookingUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-primary text-center"
+          className="btn-primary text-center inline-flex items-center justify-center gap-2"
         >
-          📅 Objednať sa
+          <Calendar className="w-5 h-5" />
+          Objednať sa
         </Link>
         <a
           href={`tel:${siteConfig.phone}`}
-          className="btn-secondary text-center"
+          className="btn-secondary text-center inline-flex items-center justify-center gap-2"
         >
-          📞 {siteConfig.phone}
+          <Phone className="w-5 h-5" />
+          {siteConfig.phone}
         </a>
       </div>
     </article>

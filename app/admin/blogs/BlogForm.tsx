@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Link from "next/link";
 
 type BlogFormValues = {
   title: string;
@@ -23,6 +24,7 @@ export function BlogForm({ mode, blogId, initialData }: BlogFormProps) {
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fileName, setFileName] = useState("");
 
   const [values, setValues] = useState<BlogFormValues>({
     title: initialData?.title ?? "",
@@ -33,10 +35,20 @@ export function BlogForm({ mode, blogId, initialData }: BlogFormProps) {
     published: initialData?.published ?? false,
   });
 
-  const actionLabel = mode === "create" ? "Vytvoriť blog" : "Uložiť zmeny";
-
   function handleChange(field: keyof BlogFormValues, value: string | boolean) {
     setValues((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFileName(file.name);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      setValues((prev) => ({ ...prev, imageBase64: base64.split(",")[1] }));
+    };
+    reader.readAsDataURL(file);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -46,11 +58,7 @@ export function BlogForm({ mode, blogId, initialData }: BlogFormProps) {
     setError(null);
 
     try {
-      const endpoint =
-        mode === "create"
-          ? "/api/admin/blogs"
-          : `/api/admin/blogs/${blogId}`;
-
+      const endpoint = mode === "create" ? "/api/admin/blogs" : `/api/admin/blogs/${blogId}`;
       const res = await fetch(endpoint, {
         method: mode === "create" ? "POST" : "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -66,133 +74,124 @@ export function BlogForm({ mode, blogId, initialData }: BlogFormProps) {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Nepodarilo sa uložiť blog");
+        throw new Error(data.error || "Chyba pri ukladaní");
       }
 
-      setStatus("Blog bol uložený");
+      setStatus("Uložené ✓");
       if (mode === "create") {
         router.push("/admin/blogs");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Chyba pri ukladaní");
+      setError(err instanceof Error ? err.message : "Chyba");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <label className="block text-gray-700 font-medium mb-2" htmlFor="title">
-          Názov
-        </label>
-        <input
-          id="title"
-          type="text"
-          value={values.title}
-          onChange={(e) => handleChange("title", e.target.value)}
-          required
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C8C80] focus:border-[#3C8C80] outline-none"
-        />
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-[#5C5C5C] mb-1">Názov *</label>
+          <input
+            type="text"
+            value={values.title}
+            onChange={(e) => handleChange("title", e.target.value)}
+            required
+            className="w-full px-4 py-2 border border-[#e8e6e1] rounded-lg focus:ring-2 focus:ring-[#3C8C80] focus:border-[#3C8C80] outline-none"
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-[#5C5C5C] mb-1">Autor *</label>
+          <input
+            type="text"
+            value={values.author}
+            onChange={(e) => handleChange("author", e.target.value)}
+            required
+            className="w-full px-4 py-2 border border-[#e8e6e1] rounded-lg focus:ring-2 focus:ring-[#3C8C80] focus:border-[#3C8C80] outline-none"
+          />
+        </div>
       </div>
 
       <div>
-        <label className="block text-gray-700 font-medium mb-2" htmlFor="slug">
-          Slug (nepovinné)
-        </label>
+        <label className="block text-sm text-[#5C5C5C] mb-1">Slug</label>
         <input
-          id="slug"
           type="text"
           value={values.slug}
           onChange={(e) => handleChange("slug", e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C8C80] focus:border-[#3C8C80] outline-none"
-          placeholder="napr. moja-novinka"
+          placeholder="vygeneruje sa z názvu"
+          className="w-full px-4 py-2 border border-[#e8e6e1] rounded-lg focus:ring-2 focus:ring-[#3C8C80] focus:border-[#3C8C80] outline-none"
         />
-        <p className="text-sm text-gray-500 mt-1">
-          Ak slug nevyplníte, vygeneruje sa z názvu.
-        </p>
       </div>
 
       <div>
-        <label className="block text-gray-700 font-medium mb-2" htmlFor="author">
-          Autor
-        </label>
+        <label className="block text-sm text-[#5C5C5C] mb-1">Obrázok</label>
         <input
-          id="author"
-          type="text"
-          value={values.author}
-          onChange={(e) => handleChange("author", e.target.value)}
-          required
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C8C80] focus:border-[#3C8C80] outline-none"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+          id="blog-file"
         />
+        <label
+          htmlFor="blog-file"
+          className="inline-block px-4 py-2 border border-[#e8e6e1] rounded-lg text-sm text-[#2A2A2A] cursor-pointer hover:border-[#3C8C80]"
+        >
+          Vybrať obrázok
+        </label>
+        <p className="text-sm text-[#5C5C5C] mt-1">
+          {fileName || (values.imageBase64 ? "Obrázok nahraný" : "Žiadny súbor")}
+        </p>
+        {values.imageBase64 && (
+          <div className="mt-2 relative inline-block">
+            <img
+              src={`data:image/png;base64,${values.imageBase64}`}
+              alt="Preview"
+              className="max-h-20 rounded border border-[#e8e6e1]"
+            />
+            <button
+              type="button"
+              onClick={() => { handleChange("imageBase64", ""); setFileName(""); }}
+              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-sm"
+            >
+              ×
+            </button>
+          </div>
+        )}
       </div>
 
       <div>
-        <label className="block text-gray-700 font-medium mb-2" htmlFor="content">
-          Obsah
-        </label>
+        <label className="block text-sm text-[#5C5C5C] mb-1">Obsah *</label>
         <textarea
-          id="content"
           value={values.content}
           onChange={(e) => handleChange("content", e.target.value)}
           required
           rows={10}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C8C80] focus:border-[#3C8C80] outline-none"
-          placeholder="Text článku..."
+          className="w-full px-4 py-2 border border-[#e8e6e1] rounded-lg focus:ring-2 focus:ring-[#3C8C80] focus:border-[#3C8C80] outline-none resize-y"
         />
       </div>
 
-      <div>
-        <label className="block text-gray-700 font-medium mb-2" htmlFor="imageBase64">
-          Obrázok (Base64)
-        </label>
-        <textarea
-          id="imageBase64"
-          value={values.imageBase64}
-          onChange={(e) => handleChange("imageBase64", e.target.value)}
-          rows={4}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C8C80] focus:border-[#3C8C80] outline-none"
-          placeholder="Sem vložte Base64 reťazec obrázka (nepovinné)"
-        />
-      </div>
-
-      <div className="flex items-center gap-3">
+      <label className="flex items-center gap-3 cursor-pointer">
         <input
-          id="published"
           type="checkbox"
           checked={values.published}
           onChange={(e) => handleChange("published", e.target.checked)}
-          className="w-5 h-5 rounded border-gray-300 text-[#3C8C80] focus:ring-[#3C8C80]"
+          className="w-5 h-5 rounded border-[#e8e6e1] text-[#3C8C80] focus:ring-[#3C8C80]"
         />
-        <label htmlFor="published" className="text-gray-700 font-medium">
-          Publikovať
-        </label>
-      </div>
+        <span className="text-[#2A2A2A]">Publikovať</span>
+      </label>
 
-      {status && (
-        <div className="px-4 py-3 rounded-lg bg-green-50 text-green-700 border border-green-200">
-          {status}
-        </div>
-      )}
+      {status && <p className="text-green-600 text-sm">{status}</p>}
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
-      {error && (
-        <div className="px-4 py-3 rounded-lg bg-red-50 text-red-700 border border-red-200">
-          {error}
-        </div>
-      )}
-
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-6 py-3 bg-[#3C8C80] text-white font-medium rounded-lg hover:bg-[#2d6b62] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? "Ukladám..." : actionLabel}
+      <div className="flex items-center gap-3 pt-2">
+        <button type="submit" disabled={loading} className="btn-primary disabled:opacity-50">
+          {loading ? "Ukladám..." : mode === "create" ? "Vytvoriť" : "Uložiť"}
         </button>
+        <Link href="/admin/blogs" className="text-[#2A2A2A]">
+          Zrušiť
+        </Link>
       </div>
     </form>
   );
 }
-
-
-

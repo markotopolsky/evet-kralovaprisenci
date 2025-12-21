@@ -29,16 +29,3 @@ export interface BreadcrumbItem {
   name: string;
   href: string;
 }
-
-export type Language = "sk" | "de";
-
-export interface LocalizedString {
-  sk: string;
-  de: string;
-}
-
-
-
-
-
-
