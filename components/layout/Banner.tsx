@@ -7,7 +7,7 @@ import { PromoModal } from "@/components/promo";
 import { siteConfig, getTodayOpeningHours } from "@/config/site";
 import { text } from "@/lib/i18n/translations";
 
-const PROMO_SEEN_KEY = "promo_seen";
+const PROMO_SEEN_KEY = "promo_seen_session";
 
 export function Banner() {
   const [promo, setPromo] = useState<Promo | null>(null);
@@ -38,9 +38,11 @@ export function Banner() {
           if (data.enabled && (data.barText || data.imageBase64)) {
             setPromo(data);
             
-            // Show modal automatically if promo has an image
-            if (data.imageBase64) {
-              console.log("Banner: Promo has image - opening promo modal");
+            // Show modal automatically only once per session (after refresh)
+            // Check if modal was already shown in this session
+            const promoSeen = sessionStorage.getItem(PROMO_SEEN_KEY);
+            if (data.imageBase64 && !promoSeen) {
+              console.log("Banner: Promo has image - opening promo modal (first time in session)");
               setShowPromoModal(true);
             }
           } else {
@@ -80,6 +82,8 @@ export function Banner() {
   // Handle closing the modal
   function handleCloseModal() {
     setShowPromoModal(false);
+    // Mark promo as seen in this session - won't show again until browser is closed
+    sessionStorage.setItem(PROMO_SEEN_KEY, "true");
   }
 
   // Show promo text if promo is enabled and not dismissed

@@ -117,3 +117,4 @@ export function AktualitaList({ aktuality }: AktualitaListProps) {
   );
 }
 
+

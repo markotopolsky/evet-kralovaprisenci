@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { AnimalArticle } from "@/lib/models/AnimalArticle";
 import { formatDate } from "@/lib/utils";
 import { FileText } from "lucide-react";
@@ -34,8 +35,19 @@ export function ArticleDetail({ article, animalSlug, animalName }: ArticleDetail
         <p className="text-xl text-text-muted">{article.excerpt}</p>
       </div>
 
-      <div className="aspect-video bg-primary-light rounded-xl flex items-center justify-center mb-8">
-        <FileText className="w-24 h-24 text-primary/40" />
+      <div className="aspect-video bg-primary-light rounded-xl overflow-hidden relative mb-8">
+        {article.image ? (
+          <Image
+            src={article.image}
+            alt={article.title}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <FileText className="w-24 h-24 text-primary/40" />
+          </div>
+        )}
       </div>
 
       <div className="prose prose-lg max-w-none">

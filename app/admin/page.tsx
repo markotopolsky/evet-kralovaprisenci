@@ -66,7 +66,7 @@ export default function AdminPage() {
           setEnabled(data.enabled);
           setBarText(data.barText);
           if (data.imageBase64 && typeof data.imageBase64 === 'string' && data.imageBase64.length > 0) {
-            setImageBase64(data.imageBase64);
+          setImageBase64(data.imageBase64);
           } else {
             setImageBase64(null);
           }
@@ -306,9 +306,9 @@ export default function AdminPage() {
                 <div className="mt-3">
                   <p className="text-sm text-gray-500 mb-2">Náhľad obrázku:</p>
                   <div className="border border-gray-200 rounded-lg p-2 bg-gray-50">
-                    <img
+                  <img
                       src={`data:image/*;base64,${imageBase64}`}
-                      alt="Preview"
+                    alt="Preview"
                       className="max-w-full max-h-64 rounded-lg"
                       style={{ display: 'block' }}
                       onError={(e) => {
@@ -319,7 +319,7 @@ export default function AdminPage() {
                       onLoad={() => {
                         console.log("Image loaded successfully, length:", imageBase64?.length);
                       }}
-                    />
+                  />
                   </div>
                   <button
                     type="button"

@@ -19,3 +19,4 @@ export type AktualitaDto = Omit<Aktualita, "_id"> & {
   excerpt: string;
 };
 
+
